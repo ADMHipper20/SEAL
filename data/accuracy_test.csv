@@ -1,0 +1,421 @@
+model,sensor,h,MAE,RMSE,skill_%
+Persistence,temperature_c,1,0.12646,0.14728,0.0
+Persistence,temperature_c,2,0.24956,0.28276,0.0
+Persistence,temperature_c,3,0.37163,0.4199,0.0
+Persistence,temperature_c,4,0.49297,0.55467,0.0
+Persistence,temperature_c,5,0.60875,0.68765,0.0
+Persistence,temperature_c,6,0.72395,0.81712,0.0
+Persistence,temperature_c,7,0.83526,0.94379,0.0
+Persistence,temperature_c,8,0.94138,1.06588,0.0
+Persistence,temperature_c,9,1.04662,1.18429,0.0
+Persistence,temperature_c,10,1.14395,1.29655,0.0
+Persistence,temperature_c,11,1.24202,1.40469,0.0
+Persistence,temperature_c,12,1.33072,1.5058,0.0
+Persistence,salinity_ppt,1,0.09223,0.17833,0.0
+Persistence,salinity_ppt,2,0.0968,0.1766,0.0
+Persistence,salinity_ppt,3,0.11393,0.22976,0.0
+Persistence,salinity_ppt,4,0.11034,0.22303,0.0
+Persistence,salinity_ppt,5,0.12596,0.26708,0.0
+Persistence,salinity_ppt,6,0.1226,0.26358,0.0
+Persistence,salinity_ppt,7,0.13767,0.29673,0.0
+Persistence,salinity_ppt,8,0.142,0.29852,0.0
+Persistence,salinity_ppt,9,0.15476,0.32843,0.0
+Persistence,salinity_ppt,10,0.15945,0.32931,0.0
+Persistence,salinity_ppt,11,0.16983,0.35356,0.0
+Persistence,salinity_ppt,12,0.17646,0.35597,0.0
+Persistence,ph,1,0.00776,0.0101,0.0
+Persistence,ph,2,0.01101,0.01404,0.0
+Persistence,ph,3,0.01329,0.01678,0.0
+Persistence,ph,4,0.01712,0.02122,0.0
+Persistence,ph,5,0.01948,0.02392,0.0
+Persistence,ph,6,0.02335,0.02825,0.0
+Persistence,ph,7,0.02602,0.03083,0.0
+Persistence,ph,8,0.02948,0.03494,0.0
+Persistence,ph,9,0.03227,0.03761,0.0
+Persistence,ph,10,0.03554,0.04143,0.0
+Persistence,ph,11,0.03803,0.04388,0.0
+Persistence,ph,12,0.04083,0.04718,0.0
+Persistence,dissolved_oxygen_mgl,1,0.03698,0.04751,0.0
+Persistence,dissolved_oxygen_mgl,2,0.04519,0.06991,0.0
+Persistence,dissolved_oxygen_mgl,3,0.05408,0.08665,0.0
+Persistence,dissolved_oxygen_mgl,4,0.06447,0.09715,0.0
+Persistence,dissolved_oxygen_mgl,5,0.07573,0.10719,0.0
+Persistence,dissolved_oxygen_mgl,6,0.08597,0.11753,0.0
+Persistence,dissolved_oxygen_mgl,7,0.09784,0.12769,0.0
+Persistence,dissolved_oxygen_mgl,8,0.10836,0.13837,0.0
+Persistence,dissolved_oxygen_mgl,9,0.11912,0.14788,0.0
+Persistence,dissolved_oxygen_mgl,10,0.12735,0.15872,0.0
+Persistence,dissolved_oxygen_mgl,11,0.13808,0.16887,0.0
+Persistence,dissolved_oxygen_mgl,12,0.14544,0.17634,0.0
+Persistence,ammonia_mgl,1,0.00684,0.00979,0.0
+Persistence,ammonia_mgl,2,0.00871,0.01487,0.0
+Persistence,ammonia_mgl,3,0.01108,0.01735,0.0
+Persistence,ammonia_mgl,4,0.01283,0.02032,0.0
+Persistence,ammonia_mgl,5,0.01482,0.02176,0.0
+Persistence,ammonia_mgl,6,0.01631,0.0241,0.0
+Persistence,ammonia_mgl,7,0.01774,0.02522,0.0
+Persistence,ammonia_mgl,8,0.01957,0.02761,0.0
+Persistence,ammonia_mgl,9,0.02059,0.02833,0.0
+Persistence,ammonia_mgl,10,0.02212,0.03042,0.0
+Persistence,ammonia_mgl,11,0.02282,0.03093,0.0
+Persistence,ammonia_mgl,12,0.02407,0.03276,0.0
+Seasonal naive,temperature_c,1,0.63554,0.7814,-402.5463
+Seasonal naive,temperature_c,2,0.63612,0.78421,-154.89736
+Seasonal naive,temperature_c,3,0.63444,0.7802,-70.71682
+Seasonal naive,temperature_c,4,0.63503,0.78297,-28.81532
+Seasonal naive,temperature_c,5,0.63378,0.77947,-4.11157
+Seasonal naive,temperature_c,6,0.63437,0.78219,12.37364
+Seasonal naive,temperature_c,7,0.6332,0.77879,24.19171
+Seasonal naive,temperature_c,8,0.63356,0.78118,32.69844
+Seasonal naive,temperature_c,9,0.63261,0.77799,39.55667
+Seasonal naive,temperature_c,10,0.63327,0.78078,44.64206
+Seasonal naive,temperature_c,11,0.63239,0.77769,49.08373
+Seasonal naive,temperature_c,12,0.63283,0.78013,52.44459
+Seasonal naive,salinity_ppt,1,0.45656,0.62997,-395.00635
+Seasonal naive,salinity_ppt,2,0.46276,0.64106,-378.06452
+Seasonal naive,salinity_ppt,3,0.45667,0.63001,-300.8222
+Seasonal naive,salinity_ppt,4,0.4623,0.64077,-318.96003
+Seasonal naive,salinity_ppt,5,0.45679,0.63004,-262.65882
+Seasonal naive,salinity_ppt,6,0.46159,0.6405,-276.5043
+Seasonal naive,salinity_ppt,7,0.45667,0.62997,-231.72668
+Seasonal naive,salinity_ppt,8,0.46089,0.64011,-224.57394
+Seasonal naive,salinity_ppt,9,0.45656,0.62992,-195.00631
+Seasonal naive,salinity_ppt,10,0.4603,0.63986,-188.69033
+Seasonal naive,salinity_ppt,11,0.45597,0.62967,-168.49
+Seasonal naive,salinity_ppt,12,0.46007,0.63973,-160.71666
+Seasonal naive,ph,1,0.0298,0.0461,-283.86124
+Seasonal naive,ph,2,0.03043,0.04694,-176.48936
+Seasonal naive,ph,3,0.02977,0.04609,-123.96476
+Seasonal naive,ph,4,0.03041,0.04693,-77.63338
+Seasonal naive,ph,5,0.02973,0.04608,-52.58413
+Seasonal naive,ph,6,0.0304,0.04693,-30.19057
+Seasonal naive,ph,7,0.02975,0.04608,-14.35644
+Seasonal naive,ph,8,0.03042,0.04693,-3.17712
+Seasonal naive,ph,9,0.02971,0.04607,7.9463
+Seasonal naive,ph,10,0.03034,0.04688,14.62932
+Seasonal naive,ph,11,0.02975,0.04608,21.76724
+Seasonal naive,ph,12,0.03041,0.04692,25.52337
+Seasonal naive,dissolved_oxygen_mgl,1,0.08487,0.14424,-129.52602
+Seasonal naive,dissolved_oxygen_mgl,2,0.08397,0.12217,-85.83398
+Seasonal naive,dissolved_oxygen_mgl,3,0.08131,0.12393,-50.3392
+Seasonal naive,dissolved_oxygen_mgl,4,0.08311,0.11977,-28.9018
+Seasonal naive,dissolved_oxygen_mgl,5,0.08098,0.12361,-6.93779
+Seasonal naive,dissolved_oxygen_mgl,6,0.08298,0.11968,3.48225
+Seasonal naive,dissolved_oxygen_mgl,7,0.08087,0.12354,17.34152
+Seasonal naive,dissolved_oxygen_mgl,8,0.08273,0.11954,23.65103
+Seasonal naive,dissolved_oxygen_mgl,9,0.08084,0.12351,32.13513
+Seasonal naive,dissolved_oxygen_mgl,10,0.08276,0.11957,35.019
+Seasonal naive,dissolved_oxygen_mgl,11,0.08073,0.1234,41.52933
+Seasonal naive,dissolved_oxygen_mgl,12,0.08279,0.11959,43.07758
+Seasonal naive,ammonia_mgl,1,0.03553,0.06222,-419.52055
+Seasonal naive,ammonia_mgl,2,0.03528,0.06127,-304.97312
+Seasonal naive,ammonia_mgl,3,0.03555,0.06222,-220.93023
+Seasonal naive,ammonia_mgl,4,0.0353,0.06128,-175.09124
+Seasonal naive,ammonia_mgl,5,0.03557,0.06223,-139.9684
+Seasonal naive,ammonia_mgl,6,0.03533,0.06128,-116.58291
+Seasonal naive,ammonia_mgl,7,0.03557,0.06223,-100.52805
+Seasonal naive,ammonia_mgl,8,0.03534,0.06128,-80.61041
+Seasonal naive,ammonia_mgl,9,0.03562,0.06223,-73.03754
+Seasonal naive,ammonia_mgl,10,0.03535,0.06128,-59.82001
+Seasonal naive,ammonia_mgl,11,0.03563,0.06224,-56.13135
+Seasonal naive,ammonia_mgl,12,0.03536,0.06129,-46.88716
+ARIMA,temperature_c,1,0.04103,0.05075,67.55604
+ARIMA,temperature_c,2,0.05207,0.06381,79.13475
+ARIMA,temperature_c,3,0.06576,0.08178,82.30525
+ARIMA,temperature_c,4,0.08191,0.10047,83.38524
+ARIMA,temperature_c,5,0.09661,0.12075,84.13047
+ARIMA,temperature_c,6,0.11456,0.14293,84.17494
+ARIMA,temperature_c,7,0.13401,0.16759,83.95638
+ARIMA,temperature_c,8,0.15517,0.19379,83.51713
+ARIMA,temperature_c,9,0.17702,0.22009,83.08616
+ARIMA,temperature_c,10,0.19833,0.24776,82.66319
+ARIMA,temperature_c,11,0.22239,0.27657,82.09452
+ARIMA,temperature_c,12,0.24475,0.30636,81.60742
+ARIMA,salinity_ppt,1,0.08953,0.17487,2.92559
+ARIMA,salinity_ppt,2,0.09463,0.17322,2.23739
+ARIMA,salinity_ppt,3,0.1111,0.22512,2.48681
+ARIMA,salinity_ppt,4,0.11003,0.21874,0.28799
+ARIMA,salinity_ppt,5,0.12577,0.26093,0.14585
+ARIMA,salinity_ppt,6,0.12472,0.25778,-1.7329
+ARIMA,salinity_ppt,7,0.13947,0.28929,-1.30816
+ARIMA,salinity_ppt,8,0.14602,0.29093,-2.83434
+ARIMA,salinity_ppt,9,0.15944,0.31891,-3.02412
+ARIMA,salinity_ppt,10,0.16725,0.31987,-4.89515
+ARIMA,salinity_ppt,11,0.17796,0.34201,-4.78911
+ARIMA,salinity_ppt,12,0.18598,0.34435,-5.39414
+ARIMA,ph,1,0.00784,0.01005,-0.95815
+ARIMA,ph,2,0.01102,0.01394,-0.14617
+ARIMA,ph,3,0.01334,0.01659,-0.36277
+ARIMA,ph,4,0.01698,0.02091,0.82638
+ARIMA,ph,5,0.0192,0.02345,1.46259
+ARIMA,ph,6,0.0229,0.02758,1.93786
+ARIMA,ph,7,0.02546,0.02993,2.14423
+ARIMA,ph,8,0.02849,0.03378,3.39048
+ARIMA,ph,9,0.03105,0.03615,3.79533
+ARIMA,ph,10,0.03408,0.03965,4.09767
+ARIMA,ph,11,0.03635,0.04177,4.42627
+ARIMA,ph,12,0.03885,0.04471,4.84499
+ARIMA,dissolved_oxygen_mgl,1,0.03934,0.04906,-6.39502
+ARIMA,dissolved_oxygen_mgl,2,0.04743,0.06779,-4.95622
+ARIMA,dissolved_oxygen_mgl,3,0.05615,0.08275,-3.826
+ARIMA,dissolved_oxygen_mgl,4,0.06626,0.09143,-2.77343
+ARIMA,dissolved_oxygen_mgl,5,0.07567,0.10146,0.07603
+ARIMA,dissolved_oxygen_mgl,6,0.08479,0.10962,1.37272
+ARIMA,dissolved_oxygen_mgl,7,0.09378,0.11918,4.1558
+ARIMA,dissolved_oxygen_mgl,8,0.10181,0.1262,6.04642
+ARIMA,dissolved_oxygen_mgl,9,0.1087,0.13409,8.74417
+ARIMA,dissolved_oxygen_mgl,10,0.1139,0.14006,10.5633
+ARIMA,dissolved_oxygen_mgl,11,0.11785,0.14653,14.65001
+ARIMA,dissolved_oxygen_mgl,12,0.12156,0.14969,16.41965
+ARIMA,ammonia_mgl,1,0.00697,0.0098,-1.85649
+ARIMA,ammonia_mgl,2,0.00895,0.01478,-2.74113
+ARIMA,ammonia_mgl,3,0.01121,0.01723,-1.17474
+ARIMA,ammonia_mgl,4,0.01314,0.02005,-2.38893
+ARIMA,ammonia_mgl,5,0.01499,0.02146,-1.11484
+ARIMA,ammonia_mgl,6,0.01665,0.02363,-2.10295
+ARIMA,ammonia_mgl,7,0.01788,0.02472,-0.76453
+ARIMA,ammonia_mgl,8,0.01978,0.02689,-1.08033
+ARIMA,ammonia_mgl,9,0.02043,0.02761,0.73348
+ARIMA,ammonia_mgl,10,0.0219,0.02946,0.99485
+ARIMA,ammonia_mgl,11,0.02209,0.02997,3.1976
+ARIMA,ammonia_mgl,12,0.02333,0.03155,3.08043
+SARIMA (s=48),temperature_c,1,0.04468,0.05596,64.67198
+SARIMA (s=48),temperature_c,2,0.06393,0.07899,74.38279
+SARIMA (s=48),temperature_c,3,0.08428,0.10422,77.32193
+SARIMA (s=48),temperature_c,4,0.10541,0.13196,78.61681
+SARIMA (s=48),temperature_c,5,0.12632,0.1567,79.24939
+SARIMA (s=48),temperature_c,6,0.1493,0.18487,79.3775
+SARIMA (s=48),temperature_c,7,0.16957,0.20926,79.69823
+SARIMA (s=48),temperature_c,8,0.19208,0.23728,79.59597
+SARIMA (s=48),temperature_c,9,0.21155,0.2605,79.78747
+SARIMA (s=48),temperature_c,10,0.23239,0.28723,79.68516
+SARIMA (s=48),temperature_c,11,0.25126,0.30982,79.77004
+SARIMA (s=48),temperature_c,12,0.27086,0.33559,79.64581
+SARIMA (s=48),salinity_ppt,1,0.089,0.17472,3.50792
+SARIMA (s=48),salinity_ppt,2,0.09214,0.17231,4.81749
+SARIMA (s=48),salinity_ppt,3,0.10863,0.226,4.65875
+SARIMA (s=48),salinity_ppt,4,0.10641,0.21976,3.56698
+SARIMA (s=48),salinity_ppt,5,0.12176,0.26359,3.33458
+SARIMA (s=48),salinity_ppt,6,0.11851,0.26052,3.33922
+SARIMA (s=48),salinity_ppt,7,0.13414,0.29434,2.56418
+SARIMA (s=48),salinity_ppt,8,0.13786,0.29583,2.91364
+SARIMA (s=48),salinity_ppt,9,0.15065,0.32632,2.65945
+SARIMA (s=48),salinity_ppt,10,0.15576,0.32722,2.30856
+SARIMA (s=48),salinity_ppt,11,0.16708,0.352,1.6183
+SARIMA (s=48),salinity_ppt,12,0.17268,0.35396,2.14155
+SARIMA (s=48),ph,1,0.00837,0.01094,-7.78695
+SARIMA (s=48),ph,2,0.01098,0.01514,0.20117
+SARIMA (s=48),ph,3,0.01295,0.0182,2.548
+SARIMA (s=48),ph,4,0.01491,0.02176,12.87872
+SARIMA (s=48),ph,5,0.01604,0.02409,17.6847
+SARIMA (s=48),ph,6,0.01791,0.02708,23.28557
+SARIMA (s=48),ph,7,0.01886,0.0289,27.51589
+SARIMA (s=48),ph,8,0.02045,0.03136,30.64705
+SARIMA (s=48),ph,9,0.02124,0.03283,34.17939
+SARIMA (s=48),ph,10,0.02237,0.03487,37.064
+SARIMA (s=48),ph,11,0.02305,0.03597,39.39145
+SARIMA (s=48),ph,12,0.02406,0.03762,41.06804
+SARIMA (s=48),dissolved_oxygen_mgl,1,0.04031,0.05007,-9.01416
+SARIMA (s=48),dissolved_oxygen_mgl,2,0.04751,0.06918,-5.13794
+SARIMA (s=48),dissolved_oxygen_mgl,3,0.05479,0.08243,-1.30819
+SARIMA (s=48),dissolved_oxygen_mgl,4,0.06317,0.08996,2.028
+SARIMA (s=48),dissolved_oxygen_mgl,5,0.07193,0.09807,5.0157
+SARIMA (s=48),dissolved_oxygen_mgl,6,0.08043,0.10541,6.44184
+SARIMA (s=48),dissolved_oxygen_mgl,7,0.08914,0.11345,8.89788
+SARIMA (s=48),dissolved_oxygen_mgl,8,0.09637,0.12009,11.06625
+SARIMA (s=48),dissolved_oxygen_mgl,9,0.10407,0.12726,12.6329
+SARIMA (s=48),dissolved_oxygen_mgl,10,0.10899,0.13364,14.42315
+SARIMA (s=48),dissolved_oxygen_mgl,11,0.11522,0.14034,16.55066
+SARIMA (s=48),dissolved_oxygen_mgl,12,0.11876,0.14385,18.34627
+SARIMA (s=48),ammonia_mgl,1,0.00759,0.01121,-10.96463
+SARIMA (s=48),ammonia_mgl,2,0.00867,0.01473,0.46434
+SARIMA (s=48),ammonia_mgl,3,0.01007,0.01674,9.1166
+SARIMA (s=48),ammonia_mgl,4,0.01112,0.01929,13.38372
+SARIMA (s=48),ammonia_mgl,5,0.01209,0.02077,18.42434
+SARIMA (s=48),ammonia_mgl,6,0.0131,0.02318,19.66001
+SARIMA (s=48),ammonia_mgl,7,0.01389,0.02461,21.72194
+SARIMA (s=48),ammonia_mgl,8,0.0151,0.02688,22.82414
+SARIMA (s=48),ammonia_mgl,9,0.01587,0.02823,22.88836
+SARIMA (s=48),ammonia_mgl,10,0.0171,0.03027,22.70025
+SARIMA (s=48),ammonia_mgl,11,0.01782,0.03166,21.93069
+SARIMA (s=48),ammonia_mgl,12,0.01887,0.03344,21.60243
+VAR,temperature_c,1,0.04166,0.05081,67.05402
+VAR,temperature_c,2,0.05289,0.06516,78.80797
+VAR,temperature_c,3,0.0681,0.08435,81.67665
+VAR,temperature_c,4,0.08296,0.10333,83.17192
+VAR,temperature_c,5,0.10213,0.12554,83.22248
+VAR,temperature_c,6,0.12042,0.14789,83.36589
+VAR,temperature_c,7,0.13942,0.1723,83.30806
+VAR,temperature_c,8,0.16159,0.19977,82.83443
+VAR,temperature_c,9,0.18553,0.22657,82.27384
+VAR,temperature_c,10,0.20862,0.25453,81.76296
+VAR,temperature_c,11,0.2328,0.28438,81.25619
+VAR,temperature_c,12,0.25684,0.31496,80.69954
+VAR,salinity_ppt,1,0.0936,0.177,-1.48333
+VAR,salinity_ppt,2,0.09974,0.17625,-3.03426
+VAR,salinity_ppt,3,0.11877,0.22738,-4.24511
+VAR,salinity_ppt,4,0.12036,0.22373,-9.07972
+VAR,salinity_ppt,5,0.13696,0.26511,-8.73723
+VAR,salinity_ppt,6,0.14015,0.26392,-14.3129
+VAR,salinity_ppt,7,0.15789,0.29625,-14.69317
+VAR,salinity_ppt,8,0.1662,0.29912,-17.04073
+VAR,salinity_ppt,9,0.18132,0.32641,-17.16151
+VAR,salinity_ppt,10,0.192,0.32714,-20.41729
+VAR,salinity_ppt,11,0.20476,0.3489,-20.57141
+VAR,salinity_ppt,12,0.21246,0.3518,-20.40028
+VAR,ph,1,0.00707,0.00897,8.94755
+VAR,ph,2,0.00886,0.01106,19.52042
+VAR,ph,3,0.00976,0.01223,26.54808
+VAR,ph,4,0.01136,0.01437,33.65529
+VAR,ph,5,0.01171,0.01522,39.91415
+VAR,ph,6,0.01305,0.01711,44.12684
+VAR,ph,7,0.0137,0.01775,47.35207
+VAR,ph,8,0.01494,0.01943,49.31394
+VAR,ph,9,0.01579,0.02019,51.06196
+VAR,ph,10,0.01677,0.02182,52.81824
+VAR,ph,11,0.01751,0.02249,53.95712
+VAR,ph,12,0.01833,0.02386,55.11802
+VAR,dissolved_oxygen_mgl,1,0.03789,0.04769,-2.4735
+VAR,dissolved_oxygen_mgl,2,0.04146,0.06136,8.23916
+VAR,dissolved_oxygen_mgl,3,0.04186,0.06624,22.60557
+VAR,dissolved_oxygen_mgl,4,0.04336,0.06598,32.74299
+VAR,dissolved_oxygen_mgl,5,0.04223,0.06237,44.23083
+VAR,dissolved_oxygen_mgl,6,0.0428,0.05959,50.21335
+VAR,dissolved_oxygen_mgl,7,0.0426,0.05659,56.46362
+VAR,dissolved_oxygen_mgl,8,0.04471,0.05818,58.73669
+VAR,dissolved_oxygen_mgl,9,0.04329,0.05431,63.65544
+VAR,dissolved_oxygen_mgl,10,0.04703,0.05893,63.06946
+VAR,dissolved_oxygen_mgl,11,0.04575,0.05695,66.86644
+VAR,dissolved_oxygen_mgl,12,0.04968,0.06254,65.84451
+VAR,ammonia_mgl,1,0.00728,0.00993,-6.49281
+VAR,ammonia_mgl,2,0.00922,0.01465,-5.84428
+VAR,ammonia_mgl,3,0.01143,0.01721,-3.18316
+VAR,ammonia_mgl,4,0.01308,0.01983,-1.8841
+VAR,ammonia_mgl,5,0.01478,0.02128,0.33275
+VAR,ammonia_mgl,6,0.01626,0.02329,0.30019
+VAR,ammonia_mgl,7,0.01728,0.02436,2.60312
+VAR,ammonia_mgl,8,0.01895,0.02638,3.14905
+VAR,ammonia_mgl,9,0.01956,0.02707,4.96579
+VAR,ammonia_mgl,10,0.02096,0.0288,5.21996
+VAR,ammonia_mgl,11,0.02094,0.02924,8.26258
+VAR,ammonia_mgl,12,0.02222,0.03082,7.69667
+VAR + daily harmonics,temperature_c,1,0.04014,0.04933,68.25969
+VAR + daily harmonics,temperature_c,2,0.05086,0.06296,79.61906
+VAR + daily harmonics,temperature_c,3,0.06468,0.07954,82.5957
+VAR + daily harmonics,temperature_c,4,0.07854,0.09849,84.06725
+VAR + daily harmonics,temperature_c,5,0.09249,0.11633,84.80585
+VAR + daily harmonics,temperature_c,6,0.11063,0.13829,84.71875
+VAR + daily harmonics,temperature_c,7,0.12692,0.15821,84.80502
+VAR + daily harmonics,temperature_c,8,0.14751,0.18332,84.33087
+VAR + daily harmonics,temperature_c,9,0.16401,0.20374,84.32965
+VAR + daily harmonics,temperature_c,10,0.18263,0.22812,84.03484
+VAR + daily harmonics,temperature_c,11,0.20157,0.24995,83.77046
+VAR + daily harmonics,temperature_c,12,0.21969,0.27495,83.49104
+VAR + daily harmonics,salinity_ppt,1,0.09065,0.17624,1.7201
+VAR + daily harmonics,salinity_ppt,2,0.09621,0.17494,0.60554
+VAR + daily harmonics,salinity_ppt,3,0.11337,0.22762,0.49917
+VAR + daily harmonics,salinity_ppt,4,0.11637,0.22209,-5.46275
+VAR + daily harmonics,salinity_ppt,5,0.13298,0.26491,-5.57311
+VAR + daily harmonics,salinity_ppt,6,0.13299,0.26189,-8.47525
+VAR + daily harmonics,salinity_ppt,7,0.15069,0.29514,-9.4601
+VAR + daily harmonics,salinity_ppt,8,0.15772,0.29717,-11.07143
+VAR + daily harmonics,salinity_ppt,9,0.17424,0.3264,-12.58594
+VAR + daily harmonics,salinity_ppt,10,0.18219,0.32836,-14.26628
+VAR + daily harmonics,salinity_ppt,11,0.19648,0.35177,-15.69501
+VAR + daily harmonics,salinity_ppt,12,0.20371,0.35424,-15.44071
+VAR + daily harmonics,ph,1,0.00705,0.00893,9.20874
+VAR + daily harmonics,ph,2,0.00852,0.01072,22.62819
+VAR + daily harmonics,ph,3,0.00929,0.01187,30.13218
+VAR + daily harmonics,ph,4,0.01058,0.01353,38.17542
+VAR + daily harmonics,ph,5,0.01113,0.01434,42.86746
+VAR + daily harmonics,ph,6,0.01173,0.01571,49.77121
+VAR + daily harmonics,ph,7,0.01265,0.01624,51.38204
+VAR + daily harmonics,ph,8,0.01329,0.01747,54.92199
+VAR + daily harmonics,ph,9,0.01383,0.01817,57.15262
+VAR + daily harmonics,ph,10,0.01453,0.0194,59.11255
+VAR + daily harmonics,ph,11,0.01507,0.02016,60.36714
+VAR + daily harmonics,ph,12,0.01563,0.02135,61.72762
+VAR + daily harmonics,dissolved_oxygen_mgl,1,0.0363,0.04643,1.82559
+VAR + daily harmonics,dissolved_oxygen_mgl,2,0.03987,0.05857,11.77296
+VAR + daily harmonics,dissolved_oxygen_mgl,3,0.03965,0.06345,26.68372
+VAR + daily harmonics,dissolved_oxygen_mgl,4,0.04093,0.06295,36.51255
+VAR + daily harmonics,dissolved_oxygen_mgl,5,0.04007,0.05923,47.09116
+VAR + daily harmonics,dissolved_oxygen_mgl,6,0.04104,0.05754,52.26295
+VAR + daily harmonics,dissolved_oxygen_mgl,7,0.03929,0.05318,59.84105
+VAR + daily harmonics,dissolved_oxygen_mgl,8,0.04163,0.05472,61.58105
+VAR + daily harmonics,dissolved_oxygen_mgl,9,0.03928,0.04989,67.0228
+VAR + daily harmonics,dissolved_oxygen_mgl,10,0.04257,0.05462,66.57081
+VAR + daily harmonics,dissolved_oxygen_mgl,11,0.04094,0.05153,70.35179
+VAR + daily harmonics,dissolved_oxygen_mgl,12,0.04428,0.05599,69.55781
+VAR + daily harmonics,ammonia_mgl,1,0.00688,0.00922,-0.571
+VAR + daily harmonics,ammonia_mgl,2,0.00879,0.01351,-0.91924
+VAR + daily harmonics,ammonia_mgl,3,0.0099,0.01483,10.62777
+VAR + daily harmonics,ammonia_mgl,4,0.01131,0.01704,11.89501
+VAR + daily harmonics,ammonia_mgl,5,0.01191,0.01743,19.63299
+VAR + daily harmonics,ammonia_mgl,6,0.01262,0.01924,22.64781
+VAR + daily harmonics,ammonia_mgl,7,0.01315,0.01968,25.85634
+VAR + daily harmonics,ammonia_mgl,8,0.01435,0.02185,26.66968
+VAR + daily harmonics,ammonia_mgl,9,0.01496,0.0224,27.30656
+VAR + daily harmonics,ammonia_mgl,10,0.01622,0.02451,26.66082
+VAR + daily harmonics,ammonia_mgl,11,0.01695,0.02529,25.74183
+VAR + daily harmonics,ammonia_mgl,12,0.01823,0.02727,24.26582
+Selected on validation,temperature_c,1,0.04014,0.04933,68.25969
+Selected on validation,temperature_c,2,0.05086,0.06296,79.61906
+Selected on validation,temperature_c,3,0.06468,0.07954,82.5957
+Selected on validation,temperature_c,4,0.07854,0.09849,84.06725
+Selected on validation,temperature_c,5,0.09249,0.11633,84.80585
+Selected on validation,temperature_c,6,0.11063,0.13829,84.71875
+Selected on validation,temperature_c,7,0.12692,0.15821,84.80502
+Selected on validation,temperature_c,8,0.14751,0.18332,84.33087
+Selected on validation,temperature_c,9,0.16401,0.20374,84.32965
+Selected on validation,temperature_c,10,0.18263,0.22812,84.03484
+Selected on validation,temperature_c,11,0.20157,0.24995,83.77046
+Selected on validation,temperature_c,12,0.21969,0.27495,83.49104
+Selected on validation,salinity_ppt,1,0.089,0.17472,3.50792
+Selected on validation,salinity_ppt,2,0.09214,0.17231,4.81749
+Selected on validation,salinity_ppt,3,0.10863,0.226,4.65875
+Selected on validation,salinity_ppt,4,0.10641,0.21976,3.56698
+Selected on validation,salinity_ppt,5,0.12176,0.26359,3.33458
+Selected on validation,salinity_ppt,6,0.11851,0.26052,3.33922
+Selected on validation,salinity_ppt,7,0.13414,0.29434,2.56418
+Selected on validation,salinity_ppt,8,0.13786,0.29583,2.91364
+Selected on validation,salinity_ppt,9,0.15065,0.32632,2.65945
+Selected on validation,salinity_ppt,10,0.15576,0.32722,2.30856
+Selected on validation,salinity_ppt,11,0.16708,0.352,1.6183
+Selected on validation,salinity_ppt,12,0.17268,0.35396,2.14155
+Selected on validation,ph,1,0.00705,0.00893,9.20874
+Selected on validation,ph,2,0.00852,0.01072,22.62819
+Selected on validation,ph,3,0.00929,0.01187,30.13218
+Selected on validation,ph,4,0.01058,0.01353,38.17542
+Selected on validation,ph,5,0.01113,0.01434,42.86746
+Selected on validation,ph,6,0.01173,0.01571,49.77121
+Selected on validation,ph,7,0.01265,0.01624,51.38204
+Selected on validation,ph,8,0.01329,0.01747,54.92199
+Selected on validation,ph,9,0.01383,0.01817,57.15262
+Selected on validation,ph,10,0.01453,0.0194,59.11255
+Selected on validation,ph,11,0.01507,0.02016,60.36714
+Selected on validation,ph,12,0.01563,0.02135,61.72762
+Selected on validation,dissolved_oxygen_mgl,1,0.0363,0.04643,1.82559
+Selected on validation,dissolved_oxygen_mgl,2,0.03987,0.05857,11.77296
+Selected on validation,dissolved_oxygen_mgl,3,0.03965,0.06345,26.68372
+Selected on validation,dissolved_oxygen_mgl,4,0.04093,0.06295,36.51255
+Selected on validation,dissolved_oxygen_mgl,5,0.04007,0.05923,47.09116
+Selected on validation,dissolved_oxygen_mgl,6,0.04104,0.05754,52.26295
+Selected on validation,dissolved_oxygen_mgl,7,0.03929,0.05318,59.84105
+Selected on validation,dissolved_oxygen_mgl,8,0.04163,0.05472,61.58105
+Selected on validation,dissolved_oxygen_mgl,9,0.03928,0.04989,67.0228
+Selected on validation,dissolved_oxygen_mgl,10,0.04257,0.05462,66.57081
+Selected on validation,dissolved_oxygen_mgl,11,0.04094,0.05153,70.35179
+Selected on validation,dissolved_oxygen_mgl,12,0.04428,0.05599,69.55781
+Selected on validation,ammonia_mgl,1,0.00759,0.01121,-10.96463
+Selected on validation,ammonia_mgl,2,0.00867,0.01473,0.46434
+Selected on validation,ammonia_mgl,3,0.01007,0.01674,9.1166
+Selected on validation,ammonia_mgl,4,0.01112,0.01929,13.38372
+Selected on validation,ammonia_mgl,5,0.01209,0.02077,18.42434
+Selected on validation,ammonia_mgl,6,0.0131,0.02318,19.66001
+Selected on validation,ammonia_mgl,7,0.01389,0.02461,21.72194
+Selected on validation,ammonia_mgl,8,0.0151,0.02688,22.82414
+Selected on validation,ammonia_mgl,9,0.01587,0.02823,22.88836
+Selected on validation,ammonia_mgl,10,0.0171,0.03027,22.70025
+Selected on validation,ammonia_mgl,11,0.01782,0.03166,21.93069
+Selected on validation,ammonia_mgl,12,0.01887,0.03344,21.60243
