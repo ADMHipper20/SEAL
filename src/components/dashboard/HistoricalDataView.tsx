@@ -34,7 +34,7 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
   const totalPages = Math.ceil(filteredRows.length / rowsPerPage) || 1;
   const paginatedRows = filteredRows.slice((page - 1) * rowsPerPage, page * rowsPerPage);
 
-  // Export CSV with exact 30-minute median contract columns (Rule R3)
+  // Export CSV with exact 30-minute median contract columns (PLANS.md §4.2 & Rule R3)
   const handleExportCSV = () => {
     const headers = [
       'timestamp',
@@ -42,7 +42,8 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
       'salinity_ppt',
       'ph',
       'dissolved_oxygen_mgl',
-      'ammonia_mgl',
+      'turbidity_ntu',
+      'fwqi',
       'fuzzy_suitability',
       'fuzzy_status',
     ];
@@ -52,7 +53,8 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
       pt.values.salinity_ppt ?? '',
       pt.values.ph ?? '',
       pt.values.dissolved_oxygen_mgl ?? '',
-      pt.values.ammonia_mgl ?? '',
+      pt.values.turbidity_ntu ?? '',
+      pt.assessment.fwqi != null ? pt.assessment.fwqi.toFixed(2) : '',
       pt.assessment.suitability != null ? pt.assessment.suitability.toFixed(4) : '',
       pt.assessment.status,
     ]);
@@ -60,7 +62,7 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
       'data:text/csv;charset=utf-8,' + [headers, ...rows].map((e) => e.join(',')).join('\n');
     const link = document.createElement('a');
     link.setAttribute('href', encodeURI(csvContent));
-    const tag = mode === 'placeholder' ? 'placeholder' : 'live';
+    const tag = mode === 'placeholder' ? 'placeholder_v2' : 'live';
     link.setAttribute('download', `seal_30min_medians_${tag}.csv`);
     document.body.appendChild(link);
     link.click();
@@ -68,16 +70,16 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px', width: '100%', maxWidth: '1360px', margin: '0 auto', paddingBottom: '2rem', boxSizing: 'border-box' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', maxWidth: '1360px', margin: '0 auto', paddingBottom: '2rem', boxSizing: 'border-box' }}>
       {/* Header & CSV Export */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
+          <h1 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
             Historical 30-Minute Median Table
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '3px 0 0' }}>
-            5-sensor schema (Rule R3) · Timezone: <strong>GMT+7 (WIB)</strong> · Source:{' '}
-            <strong>{mode === 'placeholder' ? 'Synthetic Placeholder (Rule R1)' : 'Live Sensor Log'}</strong>
+            5-sensor schema (<code>turbidity_ntu</code> · Rule R3) · Timezone: <strong>GMT+7 (WIB)</strong> · Source:{' '}
+            <strong>{mode === 'placeholder' ? 'Synthetic Placeholder v2 (Rule R1)' : 'Live Sensor Log'}</strong>
           </p>
         </div>
 
@@ -121,7 +123,7 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
               fontSize: '12.5px',
               width: '100%',
               maxWidth: '320px',
-              background: 'var(--bg-surface)',
+              background: 'var(--bg-inset)',
               color: 'var(--text-primary)',
             }}
           />
@@ -155,7 +157,8 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
                 <th>salinity_ppt (ppt)</th>
                 <th>ph</th>
                 <th>dissolved_oxygen_mgl (mg/L · % sat)</th>
-                <th>ammonia_mgl (mg/L)</th>
+                <th>turbidity_ntu (NTU)</th>
+                <th>fwqi (D9)</th>
                 <th>fuzzy_suitability</th>
                 <th>fuzzy_status</th>
               </tr>
@@ -184,8 +187,11 @@ export const HistoricalDataView: React.FC<HistoricalDataViewProps> = ({ history7
                       {formatValue('dissolved_oxygen_mgl', pt.values.dissolved_oxygen_mgl)}
                       {doSat != null ? ` (${doSat.toFixed(0)}%)` : ''}
                     </td>
-                    <td>{formatValue('ammonia_mgl', pt.values.ammonia_mgl)}</td>
-                    <td style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontWeight: 700 }}>
+                    <td>{formatValue('turbidity_ntu', pt.values.turbidity_ntu)}</td>
+                    <td style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontWeight: 600 }}>
+                      {pt.assessment.fwqi != null ? pt.assessment.fwqi.toFixed(2) : '—'}
+                    </td>
+                    <td style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontWeight: 600 }}>
                       {pt.assessment.suitability != null
                         ? pt.assessment.suitability.toFixed(3)
                         : '—'}

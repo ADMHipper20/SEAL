@@ -18,11 +18,11 @@
 
 ## 1. Goal and non-goals
 
-**Goal:** a monitoring system for **one** small marine lobster holding tank. Five sensors are logged continuously. The system (a) assesses water quality with a **literature-based fuzzy rule set**, (b) **forecasts** the five sensors (30 min – 6 h ahead) with classical time-series models, and (c) turns the forecasts into a **predicted status** (Optimal / Warning / Critical) so a person can act early.
+**Goal:** a monitoring system for **one** small marine lobster holding tank. Five sensors (per the budget plan `RAB_CAPSTONE.xlsx`) are logged continuously: **temperature, salinity, pH, dissolved oxygen, turbidity**. **There is no ammonia sensor.** The system (a) assesses water quality with a **literature-based fuzzy rule set**, (b) **forecasts** the five sensors (30 min – 6 h ahead) with classical time-series models, and (c) turns the forecasts into a **predicted status** (Optimal / Warning / Critical) so a person can act early.
 
 **Non-goals (do NOT build unless a task explicitly says so):**
-- Reinforcement learning, RLHF, deep learning, LLM features.
-- Controlling hardware (blower, pumps, relays, heaters). The blower runs 24/7 and nothing is automatically controlled. **This project is monitoring + alerting only.**
+- Reinforcement learning, RLHF, LLM features. **Machine/deep learning is allowed ONLY as a sensor forecaster behind the fuzzy rules, in notebook 04 (R17).**
+- Controlling hardware (blower, pumps, relays, heaters). The blower runs 24/7 and nothing is automatically controlled. **Default: monitoring + alerting only.** NOTE: the budget plan includes a 2-channel relay and a mini aerator "as relay test load" → whether relay/aerator control is in scope is `NEEDS_INFO` (D8). **Write no actuator code until the user confirms it as a task.**
 - Dashboards, web apps, mobile apps, authentication.
 - Multi-tank support, other species (fish, mantis shrimp) or transport/shipping monitoring.
 
@@ -33,12 +33,12 @@
 **Known (from the user):**
 - One small cemented tank with decor and PVC pipe shelters, on a university campus.
 - Blower/air pump runs **24/7**. A protein skimmer and a filter pump circulate **reused** water. No automatic water exchange.
-- Animals are display/breeding stock (not for sale). The tank holds mixed marine animals; the **focus is lobster**.
-- Sensors: temperature, salinity, pH, dissolved oxygen, ammonia.
+- Animals are display/breeding stock (not for sale). The tank holds mixed marine animals; the **focus is Pearl Lobster (*Panulirus ornatus*)**.
+- Sensors (budget plan): DS18B20 temperature, DFRobot EC K=10 salinity, PH-4502C pH, DFRobot SEN0237 galvanic dissolved oxygen, analog turbidity (NTU) — read through an ESP32 + ADS1115 ADC. Reference tools: refractometer, pH buffer powders. **No ammonia sensor; the protein skimmer is relied on to limit organic load.**
+- A skimmer removes dissolved organics *before* they become ammonia; it does **not** remove ammonia itself, and turbidity is **not** an ammonia proxy.
 
 **Unknown — flag as `NEEDS_INFO`, never guess:**
-- Exact lobster species (Latin names). Ranges below come from *Panulirus ornatus* studies and general guidelines.
-- Tank volume; real temperature range; whether the ammonia sensor reads **total** or **un-ionised** ammonia; sensor models, resolution, calibration schedule; logging interval actually used.
+- Tank volume; real temperature range; turbidity-sensor calibration (analog modules output voltage, NTU is approximate); calibration schedule; logging interval actually used; whether relay/aerator control is planned.
 
 ---
 
@@ -62,6 +62,9 @@ These rules exist because earlier work broke them.
 | R12 | **No scope creep.** If you notice something worth improving, add it to §14 *Ideas* — do not implement it. |
 | R13 | **No hard-coded personal paths.** Use a `DATA_FILE` / config variable at the top of each notebook/script. |
 | R14 | **Do not claim biological conclusions.** The fuzzy status means "inside/outside published ranges", not "lobsters are healthy/sick". |
+| R15 | **Never imply ammonia is safe.** The status covers only the 5 monitored parameters. Every status summary must say so. Do not use turbidity as an ammonia proxy. |
+| R17 | **Fuzzy has the last word.** Water quality (FWQI and status) is computed ONLY by the shared `fuzzy_final()` function, from sensor values (measured or forecast). Machine-learning/deep-learning models may output **future sensor values only** — never a water-quality value, status, class or alert. Forecasts pass guard-rails first (physical limits; out-of-range → persistence). |
+| R16 | **Experimental models stay in notebook 03.** Nothing from `03_experimental_models.ipynb` enters the main pipeline unless it was marked KEEP by the pre-set rule (§8) on **real** data and the user approves. |
 
 ---
 
@@ -77,17 +80,17 @@ CSV / DB columns — **exactly these, nothing else**:
 | `salinity_ppt` | ppt | |
 | `ph` | pH units | |
 | `dissolved_oxygen_mgl` | mg/L | |
-| `ammonia_mgl` | mg/L | total vs un-ionised = `NEEDS_INFO` |
+| `turbidity_ntu` | NTU | analog sensor; calibration = `NEEDS_INFO` |
 
 Raw data may contain spikes, dropouts (NaN), frozen values, drift. **Do not "fix" raw data in place.**
 
 ### 4.2 Modelling table (derived, never stored over raw)
 - Raw → **30-minute medians**; a bin needs **≥ 3 valid readings** (of ~6 at 5-min logging), otherwise NaN.
 - Gaps **≤ 3 h** may be interpolated; longer gaps stay flagged. Always print how many bins were interpolated.
-- Derived columns allowed: `fuzzy_suitability` (0–1) and `fuzzy_status` (Optimal/Warning/Critical). **Nothing else.**
+- Derived columns allowed: `fwqi` (crisp fuzzy water-quality value, 0–100), `fuzzy_suitability` (0–1, the minimum) and `fuzzy_status` (Optimal/Warning/Critical). **Nothing else.**
 
 ### 4.3 Events table (human annotations — this is the only source of real labels)
-`timestamp`, `event_type` (feeding, water_change, calibration, maintenance, alert_ack, alert_ignored, equipment_fault), `note`, `operator`. Created by humans or the alert workflow; **never auto-invented.**
+`timestamp`, `event_type` (feeding, water_change, calibration, maintenance, skimmer_service, manual_ammonia_test, manual_nitrite_test, alert_ack, alert_ignored, equipment_fault), `value` (for manual tests), `note`, `operator`. **Feeding times are required** (experiment C uses them); **manual ammonia/nitrite test-kit readings are the only ammonia information the system will have.** Created by humans or the alert workflow; **never auto-invented.**
 
 ---
 
@@ -101,6 +104,9 @@ data/
 notebooks/
   01_data_exploration_and_plots.ipynb
   02_model_training_evaluation.ipynb
+  03_experimental_models.ipynb        # risky statistical ideas, scored by the pre-set rule (§8)
+  04_ml_dl_behind_fuzzy.ipynb         # ML/DL sensor forecasters behind the fuzzy rules (R17)
+  datasets/                           # train / validation / test 30-min tables (placeholder)
   results/                  # CSV/JSON outputs written by notebook 02
 src/
   lobster_ts_pipeline.py    # fuzzy + forecasting pipeline (CLI: --data <csv>)
@@ -123,12 +129,14 @@ docs/
 - [ ] Logger writes the §4.1 columns at a fixed interval (target 1–5 min)
 - [ ] Raw log goes into TimescaleDB (§10) *and* a daily CSV backup
 - [ ] Record sensor calibration dates in the events table
-- [ ] Verify each sensor against a reference (refractometer for salinity; test kit for ammonia/pH)
+- [ ] Verify each sensor against a reference (refractometer for salinity; pH buffers; a turbidity standard if available)
+- [ ] Start a routine of manual ammonia/nitrite test-kit readings (frequency set with staff) and log them as events
+- [ ] Log every feeding time as an event
 - **Gate:** ≥ 14 consecutive days of real data with < 5 % missing; user confirms.
 
 ### Phase 2 — Settle the fuzzy ranges
 - [ ] Resolve every `NEEDS_SOURCE` item in §7 with a real reference or a supervisor's written decision
-- [ ] Confirm lobster species and ammonia sensor type
+- [ ] Confirm lobster species; decide with staff whether 5 NTU (natural-seawater standard) is a sensible Warning level for a fed tank, and source a tolerance limit for turbidity
 - **Gate:** user signs off the final ranges; §7 has no `NEEDS_SOURCE` left.
 
 ### Phase 3 — Re-run notebooks 01 and 02 on real data
@@ -160,8 +168,11 @@ Status: **Optimal** = overall is exactly 1 · **Warning** = 0 < overall < 1 · *
 | temperature (°C) | 19 / 25 / 31 / 32 | Jones (2009), *J World Aquac Soc* 40(6):744-752 (growth 25–31 °C, optimum 27); *P. ornatus* thermal-physiology study (max non-lethal 32 °C — **full citation to be added**); culture guideline 25–30 °C (Vikaspedia, secondary source) | `NEEDS_SOURCE`: 19 °C is only the coldest temperature *tested*, not a lethal limit |
 | salinity (ppt) | 25 / 30 / 34 / 38 | culture guideline 30–38 ppt; 25–34 ppt optimum for *P. ornatus*; Jones (2009): 35 ppt best growth but lowest survival | `NEEDS_SOURCE`: lower zero-point 25 ppt is provisional |
 | pH | 7.0 / 7.8 / 8.4 / 8.5 | culture guideline 7.8–8.4; marine-biota standard 7.0–8.5 (KepMen LH No. 51/2004) | — |
+| turbidity (NTU) | step: suitability 1 if ≤ 5, else 0.5 (**Warning only, never Critical**) | KepMen LH No. 51/2004 marine-biota standard "< 5 NTU" — a **natural-seawater** standard, not a tank standard | `NEEDS_SOURCE`: no tolerance limit found; a fed tank may exceed 5 NTU after every feeding; analog NTU values need calibration |
 | dissolved O₂ (**% saturation**) | 70 / 80 / ∞ / ∞ | culture guideline: ≥ 80 % preferred, 70 % minimum; saturation computed from DO, temperature, salinity with **Weiss (1970)** | KepMen LH 51/2004 states > 5 mg/L (consistent at 28–32 °C). **Do not use the old "3.5 mg/L" value — unverified.** |
-| ammonia (mg/L) | −∞ / −∞ / 0.3 / 2.0 | KepMen LH No. 51/2004 (≤ 0.3 mg/L total ammonia); culture guideline < 2 mg/L | `NEEDS_SOURCE`: the two sources differ ~7×; total vs un-ionised unknown |
+| ~~ammonia~~ | **removed** (no sensor, per budget plan) | — | Manual test-kit readings go to the events table; if an ammonia sensor is added later, the earlier range (≤ 0.3 mg/L KepMen LH 51/2004; < 2 mg/L guideline; sources differ ~7×) is a starting point only |
+
+**Crisp value (FWQI), decision D9:** `FWQI = 100 × (Π μᵢ)^(1/5)` over the five suitabilities — a zero-order Sugeno system with product-AND, 5th root only to keep the scale readable. FWQI = 100 only when every sensor is inside its optimum; 0 when any sensor is outside tolerance. **Equal sensor weights are provisional** (staff may set weights later); the product form and the 0.5 turbidity floor are design choices, not sourced values.
 
 Rules for the fuzzy code:
 - One shared `fuzzy_assess()` function used by **every** notebook/script (no duplicated logic that can drift).
@@ -174,11 +185,13 @@ Rules for the fuzzy code:
 
 - **Step:** 30 minutes (48 steps/day). **Horizons:** 30 min, 1 h, 3 h, 6 h (steps 1, 2, 6, 12).
 - **Evaluation:** rolling-origin — a new forecast every hour; parameters frozen from the fitting window, model state updated with each new observation.
+- **Experiments (notebook 03 only):** structural model, physics-informed oxygen, feeding-aware ARIMAX, log-turbidity, forecast combination, probabilistic alerts. **Pre-set rule:** KEEP only if ≥ 2 skill points better than the best baseline on **both** validation and test; one-sided = MAYBE; else DROP. A model that is numerically unstable on any sensor is excluded for that sensor.
 - **Models (all fitted to every sensor):** Persistence · Seasonal naive (24 h) · ARIMA · SARIMA (s = 48, fitted on the latest 14 days) · VAR · VAR + daily harmonics · ARIMA + daily harmonics.
 - **Selection:** per sensor, the model with the lowest mean MAE across the four horizons **on validation**. Report the selected model's **test** score next to the best-on-test model (to show selection noise).
 - **Status forecast:** pass the five forecasted sensors through `fuzzy_assess()`; report accuracy, macro-F1, alerts caught, false alarms, with class counts.
 - **Required plots:** skill-vs-horizon, forecast-vs-actual (1 h), 24 h fan plot (shows mean reversion), VAR diagnostics, status confusion matrices, per-sensor suitability heat-map.
-- Do **not** add models, hyper-parameter searches, or neural networks without a task asking for them.
+- **ML/DL (notebook 04 only):** LightGBM, Random Forest, MLP, GRU, LSTM, dilated CNN predict the *change* of every sensor for the next 12 steps. They go through the guard-rails and then `fuzzy_final()`. **Pre-set rule:** KEEP only if the FWQI skill beats the best statistical baseline by ≥ 2 points on **both** validation and test; one-sided = MAYBE; else DROP.
+- Do **not** add further models, hyper-parameter searches, or other architectures without a task asking for them.
 
 ---
 
@@ -259,17 +272,25 @@ OUT OF SCOPE:    <things it must NOT do>
 ### Decisions
 | ID | Decision | Date | Reason |
 |---|---|---|---|
-| D1 | Time zone of `timestamp`: **Fixed to local GMT+7 (WIB / Asia/Jakarta)** across logs, pipeline, and UI | 2026-10-22 | User-specified standard time zone for the campus holding tank |
+| D1 | Time zone of `timestamp`: fixed to **GMT+7 (WIB / Asia/Jakarta)** | 2026-10-22 | user confirmed GMT+7 across telemetry and UI |
 | D2 | 30-minute medians; ≥ 3 valid readings per bin | | robust to spikes; avoids interpolated rows |
 | D3 | Chronological 60 / 20 / 20 split | | no leakage |
 | D4 | DO scored as % saturation (Weiss 1970) | | sourced guideline is in % saturation |
 | D5 | Overall suitability = MIN over parameters | | most-limiting-factor logic |
+| D6 | Ammonia sensor dropped; turbidity added | per RAB_CAPSTONE.xlsx | budget plan; skimmer relied on for organic load |
+| D7 | Turbidity can trigger Warning only (suitability 0.5 above 5 NTU) | | no sourced tolerance limit exists |
+| D8 | Relay / aerator control in scope? **TODO** | | budget lists a relay + test aerator |
+| D9 | Crisp water-quality value = FWQI (product-AND Sugeno, equal weights provisional) | | user wants fuzzy to give the crisp value |
+| D10 | ML/DL only as sensor forecasters behind fuzzy (R17) | | user: models must not control the WQI |
+| D11 | Target lobster species confirmed: **Pearl Lobster (*Panulirus ornatus*)** | 2026-11-10 | user confirmed; matches Jones (2009) thermal & salinity citations in §7 |
+| D12 | Keep Notebook 02 classical statistical models (`VAR + daily harmonics` & `SARIMA s=48`); exclude LightGBM / RF | 2026-11-10 | Notebook 04 (`ml_dl_scorecard.csv`) showed zero ML/DL models passed KEEP on validation |
 
 ### Open questions (`NEEDS_INFO` / `NEEDS_SOURCE`)
-- [ ] Lobster species (Latin names)
-- [ ] Ammonia sensor: total vs un-ionised
+- [x] Lobster species (Latin names) — confirmed *Panulirus ornatus* (Pearl Lobster, D11)
+- [ ] Relay/aerator control: in scope or not (D8)
+- [ ] Turbidity: calibration method; is 5 NTU a sensible Warning level for a fed tank; tolerance limit source
+- [ ] Manual ammonia/nitrite test routine: who, how often
 - [ ] Lower temperature and salinity tolerance limits (sources)
-- [ ] Ammonia limit: 0.3 vs 2 mg/L — which applies
 - [ ] Logging interval and whether one row holds all five sensors
 - [ ] Alert persistence time N (with staff)
 
@@ -277,12 +298,13 @@ OUT OF SCOPE:    <things it must NOT do>
 - External weather forecast (air temperature, rain) as an extra model input
 - Human-in-the-loop labelling of alerts, then supervised threshold calibration
 - RL for aeration scheduling in **simulation only**, with fuzzy as a safety layer
+- Ammonia "soft sensor" estimated from sparse manual test-kit readings (needs many paired readings; unproven)
 - Temperature + humidity logger for live-lobster transport boxes (separate project)
 
 ### Status
 | Item | State |
 |---|---|
-| Notebooks 01/02 | working on placeholder data |
+| Notebooks 01–04 | working on placeholder data (sensor set from budget plan, no ammonia); code auto-formatted (one statement per line) |
 | Real data | not started |
-| Fuzzy ranges | 4 items still `NEEDS_SOURCE` |
+| Fuzzy ranges | 4 items still `NEEDS_SOURCE` (temperature lower limit, salinity lower limit, turbidity tolerance, plus turbidity 5 NTU suitability for a tank) |
 | TimescaleDB schema | not started |

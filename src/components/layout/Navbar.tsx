@@ -1,9 +1,11 @@
 'use client';
 
 import React from 'react';
-import { Bell, Play, Pause } from 'lucide-react';
+import { Bell, Play, Pause, Sun, Moon, Monitor } from 'lucide-react';
 import { formatTimeSeconds } from '@/app/lib/format';
 import type { NavigationTab } from '@/app/lib/water';
+
+export type ThemeMode = 'system' | 'light' | 'dark';
 
 interface NavbarProps {
   currentTab: NavigationTab;
@@ -15,6 +17,8 @@ interface NavbarProps {
   secondsUntilNextPoll: number;
   onToggleLivePolling: () => void;
   onNavigateToAlerts: () => void;
+  themeMode: ThemeMode;
+  onThemeChange: (mode: ThemeMode) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -27,6 +31,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   secondsUntilNextPoll,
   onToggleLivePolling,
   onNavigateToAlerts,
+  themeMode,
+  onThemeChange,
 }) => {
   const navTabs: Array<{ id: NavigationTab; label: string; badge?: number }> = [
     { id: 'overview', label: 'Overview' },
@@ -45,13 +51,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           type="button"
           className="top-brand-icon-minimal"
           onClick={() => onTabChange('overview')}
-          title="SEAL — Marine Lobster Tank Monitoring (Home)"
-          aria-label="SEAL — Marine Lobster Tank Monitoring (Home)"
+          title="SEAL — Pearl Lobster (Panulirus ornatus) Tank Monitoring"
+          aria-label="SEAL — Pearl Lobster (Panulirus ornatus) Tank Monitoring"
         >
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="#000000">
-            <circle cx="12" cy="7.2" r="4.2" />
-            <circle cx="7.2" cy="15.5" r="4.2" />
-            <circle cx="16.8" cy="15.5" r="4.2" />
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <circle cx="12" cy="7.2" r="4.0" />
+            <circle cx="7.2" cy="15.5" r="4.0" />
+            <circle cx="16.8" cy="15.5" r="4.0" />
           </svg>
         </button>
 
@@ -63,11 +69,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           title={
             mode === 'live'
               ? 'Live telemetry from data/readings.csv (GMT+7 / WIB)'
-              : 'Synthetic placeholder data from data/sensor_log_placeholder.csv (Rule R1 · GMT+7 / WIB)'
+              : 'Synthetic placeholder v2 data from data/sensor_log_placeholder.csv (Rule R1 · GMT+7 / WIB)'
           }
         >
           <span className="top-mode-pill__dot" />
-          {mode === 'live' ? 'LIVE TELEMETRY · GMT+7' : 'PLACEHOLDER DATA · GMT+7'}
+          {mode === 'live' ? 'LIVE TELEMETRY · GMT+7' : 'PLACEHOLDER V2 · GMT+7'}
         </span>
 
         {/* 5-Second Live Telemetry Monitor Pill (Pause/Resume) */}
@@ -107,6 +113,40 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
           ))}
         </nav>
+
+        {/* Theme Mode Segmented Setting: System (Auto) / Light / Dark */}
+        <div className="top-theme-segmented" role="radiogroup" aria-label="Theme Mode Selection">
+          <button
+            type="button"
+            className={`theme-seg-btn ${themeMode === 'system' ? 'active' : ''}`}
+            onClick={() => onThemeChange('system')}
+            title="System Theme (Follow device setting)"
+            aria-label="System Theme"
+          >
+            <Monitor size={11} />
+            <span>Auto</span>
+          </button>
+          <button
+            type="button"
+            className={`theme-seg-btn ${themeMode === 'light' ? 'active' : ''}`}
+            onClick={() => onThemeChange('light')}
+            title="Light Theme"
+            aria-label="Light Theme"
+          >
+            <Sun size={11} />
+            <span>Light</span>
+          </button>
+          <button
+            type="button"
+            className={`theme-seg-btn ${themeMode === 'dark' ? 'active' : ''}`}
+            onClick={() => onThemeChange('dark')}
+            title="Dark Theme"
+            aria-label="Dark Theme"
+          >
+            <Moon size={11} />
+            <span>Dark</span>
+          </button>
+        </div>
 
         <button
           type="button"

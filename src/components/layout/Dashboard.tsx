@@ -4,7 +4,9 @@ import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { Snapshot } from '@/app/lib/data';
 import type { NavigationTab, PondVisualMode } from '@/app/lib/water';
-import { Navbar } from '@/components/layout/Navbar';
+import { Navbar, type ThemeMode } from '@/components/layout/Navbar';
+
+const THEME_STORAGE_KEY = 'seal_theme_mode';
 import { OverviewView } from '@/components/dashboard/OverviewView';
 import { ForecastView } from '@/components/dashboard/ForecastView';
 import { WaterQualityView } from '@/components/dashboard/WaterQualityView';
@@ -28,6 +30,55 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
   // 5-second real-time monitoring loop
   const [livePolling, setLivePolling] = useState<boolean>(true);
   const [secondsLeft, setSecondsLeft] = useState<number>(LIVE_POLL_INTERVAL_SECONDS);
+  const [themeMode, setThemeMode] = useState<ThemeMode>('system');
+
+  useEffect(() => {
+    try {
+      const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null;
+      if (savedTheme === 'system' || savedTheme === 'light' || savedTheme === 'dark') {
+        setThemeMode(savedTheme);
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+  }, []);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const applyTheme = () => {
+      let resolved: 'light' | 'dark';
+      if (themeMode === 'system') {
+        resolved =
+          typeof window !== 'undefined' &&
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+      } else {
+        resolved = themeMode;
+      }
+      root.setAttribute('data-theme', resolved);
+      root.style.colorScheme = resolved;
+    };
+
+    applyTheme();
+
+    if (themeMode === 'system' && typeof window !== 'undefined' && window.matchMedia) {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      const listener = () => applyTheme();
+      media.addEventListener('change', listener);
+      return () => media.removeEventListener('change', listener);
+    }
+  }, [themeMode]);
+
+  const handleThemeChange = (next: ThemeMode) => {
+    setThemeMode(next);
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch {
+      // Ignore storage access errors
+    }
+  };
 
   useEffect(() => {
     try {
@@ -100,6 +151,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
           secondsUntilNextPoll={secondsLeft}
           onToggleLivePolling={handleToggleLivePolling}
           onNavigateToAlerts={() => setCurrentTab('alerts')}
+          themeMode={themeMode}
+          onThemeChange={handleThemeChange}
         />
 
         <main

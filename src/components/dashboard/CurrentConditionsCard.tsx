@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useId, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Droplets,
   Thermometer,
   Waves,
   Wind,
-  FlaskConical,
+  Eye,
   ArrowUpRight,
   TrendingUp,
   TrendingDown,
@@ -30,28 +30,31 @@ interface CurrentConditionsCardProps {
   onViewDetails?: () => void;
 }
 
+/**
+ * Flat, gradient-free sparkline for Cold Soft Dark UI.
+ */
 const MiniSparkline: React.FC<{
   values: (number | null)[];
-  color: string;
   statusKey: 'normal' | 'warning' | 'critical' | 'unknown';
-}> = ({ values, color, statusKey }) => {
-  const reactId = useId();
-  const gradId = `mini-spark-${reactId.replace(/:/g, '')}`;
-
+}> = ({ values, statusKey }) => {
   const valid = values.filter((v): v is number => v != null && Number.isFinite(v));
   const slice = valid.slice(-16);
 
   const strokeColor =
-    statusKey === 'critical' ? '#ef4444' : statusKey === 'warning' ? '#f59e0b' : color;
+    statusKey === 'critical'
+      ? '#f87171'
+      : statusKey === 'warning'
+        ? '#fbbf24'
+        : '#38bdf8';
 
   if (slice.length < 2) {
     return (
       <svg width="72" height="22" viewBox="0 0 72 22" className="mini-sparkline-svg" aria-hidden="true">
         <path
-          d="M 2,11 Q 36,9 70,11"
+          d="M 2,11 L 70,11"
           fill="none"
           stroke={strokeColor}
-          strokeWidth="1.5"
+          strokeWidth="1.4"
           strokeOpacity="0.4"
           strokeDasharray="2,2"
         />
@@ -65,7 +68,7 @@ const MiniSparkline: React.FC<{
 
   const width = 72;
   const height = 22;
-  const paddingY = 2;
+  const paddingY = 3;
   const usableH = height - paddingY * 2;
 
   const coords = slice.map((val, idx) => {
@@ -80,17 +83,16 @@ const MiniSparkline: React.FC<{
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="mini-sparkline-svg" aria-hidden="true">
-      <defs>
-        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={strokeColor} stopOpacity="0.28" />
-          <stop offset="65%" stopColor={strokeColor} stopOpacity="0.08" />
-          <stop offset="100%" stopColor={strokeColor} stopOpacity="0.0" />
-        </linearGradient>
-      </defs>
-      <path d={area} fill={`url(#${gradId})`} />
-      <path d={line} fill="none" stroke={strokeColor} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={area} fill={strokeColor} fillOpacity="0.08" />
+      <path
+        d={line}
+        fill="none"
+        stroke={strokeColor}
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
       <circle cx={lastPt.x} cy={lastPt.y} r="2.2" fill={strokeColor} />
-      <circle cx={lastPt.x} cy={lastPt.y} r="4.5" fill={strokeColor} opacity="0.22" />
     </svg>
   );
 };
@@ -100,35 +102,27 @@ const SENSOR_STYLE: Record<
   {
     itemClass: string;
     icon: React.ReactNode;
-    color: string;
-    wide?: boolean;
   }
 > = {
   temperature_c: {
     itemClass: 'condition-temp',
-    icon: <Thermometer size={13} className="condition-icon icon-temp" />,
-    color: '#0284c7',
+    icon: <Thermometer size={13} className="condition-icon" />,
   },
   salinity_ppt: {
     itemClass: 'condition-salinity',
-    icon: <Waves size={13} className="condition-icon icon-salinity" />,
-    color: '#06b6d4',
+    icon: <Waves size={13} className="condition-icon" />,
   },
   dissolved_oxygen_mgl: {
     itemClass: 'condition-oxygen',
-    icon: <Wind size={13} className="condition-icon icon-oxygen" />,
-    color: '#8b5cf6',
+    icon: <Wind size={13} className="condition-icon" />,
   },
   ph: {
     itemClass: 'condition-ph',
-    icon: <Droplets size={13} className="condition-icon icon-ph" />,
-    color: '#f59e0b',
+    icon: <Droplets size={13} className="condition-icon" />,
   },
-  ammonia_mgl: {
-    itemClass: 'condition-temp condition-item--wide',
-    icon: <FlaskConical size={13} className="condition-icon icon-temp" />,
-    color: '#0d9488',
-    wide: true,
+  turbidity_ntu: {
+    itemClass: 'condition-turbidity condition-item--wide',
+    icon: <Eye size={13} className="condition-icon" />,
   },
 };
 
@@ -165,7 +159,7 @@ export const CurrentConditionsCard: React.FC<CurrentConditionsCardProps> = ({
     <div className="bento-card current-conditions-card">
       <div className="bento-card-header">
         <div className="card-title-with-info">
-          <Droplets size={14} style={{ color: '#0284c7', flexShrink: 0 }} />
+          <Droplets size={14} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
           <h3 className="bento-card-title">Current Conditions (5 Sensors)</h3>
         </div>
 
@@ -190,7 +184,7 @@ export const CurrentConditionsCard: React.FC<CurrentConditionsCardProps> = ({
         </div>
       </div>
 
-      {/* 5 Parameters (§4.1: temperature_c, salinity_ppt, dissolved_oxygen_mgl, ph, ammonia_mgl) */}
+      {/* 5 Parameters (§4.1: temperature_c, salinity_ppt, ph, dissolved_oxygen_mgl, turbidity_ntu) */}
       <div className="current-conditions-grid current-conditions-grid--five">
         {SENSORS.map((key) => {
           const info = SENSOR_INFO[key];
@@ -236,7 +230,7 @@ export const CurrentConditionsCard: React.FC<CurrentConditionsCardProps> = ({
                 <div className="condition-bottom-row">
                   <span className={`condition-status-pill status-${stKey}`}>{stLabel}</span>
                   <div className="condition-sparkline-wrap">
-                    <MiniSparkline values={series} color={style.color} statusKey={stKey} />
+                    <MiniSparkline values={series} statusKey={stKey} />
                   </div>
                 </div>
               </div>

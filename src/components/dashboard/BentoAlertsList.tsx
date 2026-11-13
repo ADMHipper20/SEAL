@@ -157,27 +157,18 @@ export const BentoAlertsList: React.FC<BentoAlertsListProps> = ({
 
         {filteredAlerts.length === 0 ? (
           <div className="bento-no-alerts">
-            <CheckCircle2 size={14} style={{ color: '#10b981' }} />
+            <CheckCircle2 size={14} style={{ color: 'var(--status-normal)' }} />
             <span>
               {categoryFilter !== 'all'
                 ? 'No active alerts for this filter.'
-                : 'All parameters within target range.'}
+                : 'All 5 monitored parameters within target range.'}
             </span>
           </div>
         ) : (
-          filteredAlerts.slice(0, 6).map((alert, index) => {
+          filteredAlerts.slice(0, 6).map((alert) => {
             const isCrit = alert.severity === 'critical';
-            const pillColorClass = isCrit
-              ? 'pill-red'
-              : index % 2 === 1
-                ? 'pill-amber'
-                : 'pill-orange';
-
-            const sevTextClass = isCrit
-              ? 'sev-urgent'
-              : index % 2 === 1
-                ? 'sev-amber'
-                : 'sev-orange';
+            const pillColorClass = isCrit ? 'pill-red' : 'pill-amber';
+            const sevTextClass = isCrit ? 'sev-urgent' : 'sev-amber';
 
             return (
               <div
@@ -190,7 +181,7 @@ export const BentoAlertsList: React.FC<BentoAlertsListProps> = ({
               >
                 <div className="bento-alert-left-icon">
                   {isCrit ? (
-                    <AlertCircle size={15} style={{ color: '#dc2626' }} />
+                    <AlertCircle size={15} style={{ color: 'var(--status-critical)' }} />
                   ) : (
                     <AlertTriangle size={15} className="alert-triangle-icon" />
                   )}

@@ -1,7 +1,8 @@
 """
 Generates `seal/data/forecast.json` for the Next.js dashboard using the
-30-minute median smoothing (with R4 spacing guard) and SARIMA / VAR + daily
-harmonics models selected on validation in `Claude/02_model_training_evaluation.ipynb`.
+30-minute median smoothing (with R4 spacing guard) and the classical statistical
+models (SARIMA s=48 / VAR + daily harmonics) selected on validation in
+`Claude_2/02_model_training_evaluation.ipynb`.
 """
 import json
 import warnings
@@ -21,7 +22,13 @@ STATUS_EVAL_CSV = DATA_DIR / "status_forecast_test.csv"
 SENSOR_ACC_CSV = DATA_DIR / "accuracy_test.csv"
 OUT_JSON = DATA_DIR / "forecast.json"
 
-SENSORS = ["temperature_c", "salinity_ppt", "ph", "dissolved_oxygen_mgl", "ammonia_mgl"]
+SENSORS = [
+    "temperature_c",
+    "salinity_ppt",
+    "ph",
+    "dissolved_oxygen_mgl",
+    "turbidity_ntu",
+]
 STEP = "30min"
 STEPS_PER_DAY = 48
 H = 12  # 12 steps = 6 hours ahead (covers 30m, 1h, 3h, 6h per PLANS.md §8)
@@ -31,7 +38,7 @@ SELECTED_MODELS = {
     "salinity_ppt": "SARIMA (s=48)",
     "ph": "VAR + daily harmonics",
     "dissolved_oxygen_mgl": "VAR + daily harmonics",
-    "ammonia_mgl": "SARIMA (s=48)",
+    "turbidity_ntu": "VAR + daily harmonics",
 }
 
 
@@ -66,7 +73,7 @@ def build_forecast() -> dict:
     origin_ts = window.index[-1]
     future_idx = pd.date_range(origin_ts + pd.Timedelta(STEP), periods=H, freq=STEP)
 
-    # 1. Fit VAR + daily harmonics across all 5 sensors
+    # 1. Fit VAR + daily harmonics across all 5 sensors (selected for temp, pH, DO, turbidity)
     exog_past = fourier_terms(window.index)
     exog_future = fourier_terms(future_idx)
     var_model = VAR(window.values, exog=exog_past)
@@ -75,10 +82,9 @@ def build_forecast() -> dict:
     var_fc = var_res.forecast(window.values[-lag:], steps=H, exog_future=exog_future)
     preds = {s: var_fc[:, i].copy() for i, s in enumerate(SENSORS)}
 
-    # 2. Fit SARIMA for salinity and ammonia (selected on validation)
+    # 2. Fit SARIMA(s=48) for salinity_ppt (selected on validation in Notebook 02)
     sarima_specs = {
-        "salinity_ppt": ((2, 1, 0), (1, 0, 0, STEPS_PER_DAY)),
-        "ammonia_mgl": ((1, 0, 1), (1, 1, 1, STEPS_PER_DAY)),
+        "salinity_ppt": ((1, 1, 1), (1, 0, 1, STEPS_PER_DAY)),
     }
     for sensor, (order, sorder) in sarima_specs.items():
         try:
@@ -93,6 +99,9 @@ def build_forecast() -> dict:
             preds[sensor] = np.asarray(res.forecast(steps=H), dtype=float)
         except Exception:
             pass
+
+    # Rule R17 physical guard-rail: turbidity cannot be negative
+    preds["turbidity_ntu"] = np.maximum(preds["turbidity_ntu"], 0.0)
 
     steps = []
     for step_i, ts in enumerate(future_idx):
@@ -125,7 +134,16 @@ def build_forecast() -> dict:
         horizon_map = {1: "30 min", 2: "1 h", 6: "3 h", 12: "6 h"}
         sub = acc_df[
             (acc_df["h"].isin(horizon_map.keys()))
-            & (acc_df["model"].isin(["Persistence", "Selected on validation", "VAR + daily harmonics", "SARIMA (s=48)"]))
+            & (
+                acc_df["model"].isin(
+                    [
+                        "Persistence",
+                        "Selected on validation",
+                        "VAR + daily harmonics",
+                        "SARIMA (s=48)",
+                    ]
+                )
+            )
         ]
         for _, r in sub.iterrows():
             sensor_skill.append(
@@ -146,11 +164,11 @@ def build_forecast() -> dict:
         "steps": steps,
         "status_evaluation": status_eval,
         "sensor_skill": sensor_skill,
-        # R8: Report sample sizes from notebook 02 §8 test origins
+        # R8: Report sample sizes from Claude_2/02_model_training_evaluation.ipynb §8 test origins
         "test_sample_counts": {
             "test_origins": 427,
-            "Optimal": 376,
-            "Warning": 44,
+            "Optimal": 262,
+            "Warning": 158,
             "Critical": 7,
         },
     }
@@ -160,4 +178,6 @@ if __name__ == "__main__":
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     payload = build_forecast()
     OUT_JSON.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    print(f"Wrote {OUT_JSON} (source={payload['source']}, origin={payload['origin']}, steps={len(payload['steps'])})")
+    print(
+        f"Wrote {OUT_JSON} (source={payload['source']}, origin={payload['origin']}, steps={len(payload['steps'])})"
+    )

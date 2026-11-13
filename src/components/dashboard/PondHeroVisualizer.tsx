@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import type { Point } from '@/app/lib/data';
 import { formatDateTimeSecondsGmt7 } from '@/app/lib/format';
-import type { PondVisualMode } from '@/app/lib/water';
+import { TARGET_SPECIES, type PondVisualMode } from '@/app/lib/water';
 import { PondWaterOverlay } from '@/components/dashboard/PondWaterOverlay';
 import { TrendChart, type ChartTimeRange } from '@/components/dashboard/TrendChart';
 
@@ -204,7 +204,7 @@ export const PondHeroVisualizer: React.FC<PondHeroVisualizerProps> = ({
           </div>
         )}
 
-        {/* Seamless Glassmorphism Identity Dock (Single Campus Holding Tank per PLANS.md §1 & §2) */}
+        {/* Identity Dock (Single Campus Holding Tank — Pearl Lobster P. ornatus per PLANS.md §1, §2, D11) */}
         <div className="pond-seamless-identity-overlay">
           <div className="pond-blend-left">
             <div className="pond-badge-avatar">
@@ -225,19 +225,19 @@ export const PondHeroVisualizer: React.FC<PondHeroVisualizerProps> = ({
                 >
                   <span
                     className="live-dot"
-                    style={{ background: isConnected ? '#10b981' : '#ef4444' }}
+                    style={{ background: isConnected ? '#34d399' : '#f87171' }}
                   />
                   {mode === 'placeholder' ? 'PLACEHOLDER · 5s STREAM' : 'LIVE · 5s STREAM'}
                 </span>
               </div>
 
               <div className="pond-subspecies-text">
-                Marine Lobster (<em>Panulirus spp.</em> — exact species <code>NEEDS_INFO</code>)
+                {TARGET_SPECIES.commonName} (<em>{TARGET_SPECIES.scientificName}</em> · Decision D11)
               </div>
 
               <div className="pond-meta-location-row">
                 <MapPin size={12} className="meta-pin-icon" />
-                <span>University Campus · Cemented Tank with PVC Shelters · 24/7 Blower &amp; Skimmer</span>
+                <span>University Campus · Cemented Tank with PVC Shelters · 24/7 Blower &amp; Protein Skimmer</span>
               </div>
             </div>
           </div>

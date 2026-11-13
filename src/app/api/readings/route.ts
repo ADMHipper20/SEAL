@@ -4,8 +4,8 @@
  *
  *   POST /api/readings
  *   { "temperature_c": 28.1, "salinity_ppt": 32.4, "ph": 8.02,
- *     "dissolved_oxygen_mgl": 6.3, "ammonia_mgl": 0.05,
- *     "timestamp": "2026-10-22 14:30:00" }      // optional, defaults to server time
+ *     "dissolved_oxygen_mgl": 6.3, "turbidity_ntu": 0.6,
+ *     "timestamp": "2026-11-10 14:30:00" }      // optional, defaults to server time
  *
  * Missing / null sensors are stored as empty (never as 0).
  *

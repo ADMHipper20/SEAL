@@ -11,9 +11,10 @@ interface BentoStockMetricsCardProps {
 }
 
 export const BentoStockMetricsCard: React.FC<BentoStockMetricsCardProps> = ({ current }) => {
-  const { status, suitability, perSensor, limiting } = current.assessment;
+  const { status, suitability, fwqi, perSensor, limiting } = current.assessment;
   const level = bentoStatusKey(status);
   const score = suitability != null ? Math.round(suitability * 100) : null;
+  const fwqiScore = fwqi != null ? fwqi.toFixed(1) : null;
   const doSat = doPercent(current.values);
 
   const label =
@@ -35,45 +36,47 @@ export const BentoStockMetricsCard: React.FC<BentoStockMetricsCardProps> = ({ cu
       : level === 'warning'
         ? {
             icon: <AlertTriangle size={13} className="headline-status-icon" />,
-            text: 'Sub-Optimal Ramp (0 < μ < 1)',
+            text: 'Sub-Optimal / Warning Floor (0 < μ < 1)',
             variant: 'warning',
           }
         : {
             icon: <CheckCircle2 size={13} className="headline-status-icon" />,
-            text: 'All Sensors in Published Optimum (μ = 1)',
+            text: 'All 5 Monitored Sensors Optimal (μ = 1)',
             variant: 'normal',
           };
 
-  // Strictly informational description (PLANS.md R14 & §7: no biological claims or action commands)
+  // Strictly informational description (PLANS.md R14, R15 & §7: no biological claims or action commands)
   const summaryText = limiting
-    ? limitingReason(limiting, current.values)
-    : 'All five water-quality parameters sit on the flat top (μ = 1.0) of their literature-based trapezoidal membership functions.';
+    ? `${limitingReason(limiting, current.values)} · Covers the 5 monitored parameters only (no ammonia sensor; R15).`
+    : 'All 5 monitored parameters sit inside their published optimum bounds (P. ornatus / KepMen LH 51/2004). Ammonia is not monitored by sensors (R15).';
 
   return (
     <div className="bento-card bento-stock-card">
       {/* 1. Header */}
       <div className="bento-card-header bento-stock-header">
-        <h3 className="bento-card-title">Fuzzy Suitability &amp; Limiting Factor</h3>
+        <h3 className="bento-card-title">Fuzzy Suitability &amp; FWQI</h3>
         <span className={`bento-status-pill pill-${level === 'unknown' ? 'pending' : level}`}>
           {label}
         </span>
       </div>
 
-      {/* 2. Key Metrics Strip: Overall Suitability (min over 5) + Limiting Factor (PLANS.md §7 D5) */}
+      {/* 2. Key Metrics Strip: Crisp FWQI (D9) + Overall Suitability min(μ) (D5) */}
       <div className="bento-stock-metrics-strip">
         <div className="stock-metric-tile">
           <div className="stock-metric-header">
-            <span className="stock-metric-name">Overall Suitability</span>
+            <span className="stock-metric-name">Crisp FWQI (D9)</span>
             <span className={`stock-metric-indicator ind-${level}`} />
           </div>
           <div className="stock-metric-value-row">
-            <span className="stock-metric-val">{score !== null ? `${score}%` : '—'}</span>
-            <span className="stock-metric-sub">min(μ₁…μ₅)</span>
+            <span className="stock-metric-val">{fwqiScore !== null ? fwqiScore : '—'}</span>
+            <span className="stock-metric-sub">
+              min={score !== null ? `${score}%` : '—'}
+            </span>
           </div>
           <div className="stock-metric-progress-track">
             <div
               className={`stock-metric-progress-bar bar-${level}`}
-              style={{ width: `${score !== null ? Math.min(Math.max(score, 6), 100) : 0}%` }}
+              style={{ width: `${fwqi != null ? Math.min(Math.max(fwqi, 6), 100) : 0}%` }}
             />
           </div>
         </div>
@@ -84,11 +87,11 @@ export const BentoStockMetricsCard: React.FC<BentoStockMetricsCardProps> = ({ cu
             <span className="stock-metric-target-tag">Rule D5</span>
           </div>
           <div className="stock-metric-value-row">
-            <span className="stock-metric-val" style={{ fontSize: '14px' }}>
+            <span className="stock-metric-val" style={{ fontSize: '13.5px' }}>
               {limiting ? SENSOR_INFO[limiting].shortLabel : 'None'}
             </span>
             <span className="stock-metric-sub">
-              {limiting ? 'Sets overall score' : 'All optimal'}
+              {limiting ? 'Sets overall status' : 'All optimal'}
             </span>
           </div>
           <div className="stock-metric-progress-track">
@@ -100,7 +103,7 @@ export const BentoStockMetricsCard: React.FC<BentoStockMetricsCardProps> = ({ cu
         </div>
       </div>
 
-      {/* 3. Informational Status Summary Box (Rule R14) */}
+      {/* 3. Informational Status Summary Box (Rule R14 & R15) */}
       <div className={`stock-status-summary-box banner-${statusBadge.variant}`}>
         <div className="status-summary-top">
           <div className="status-summary-title-wrap">
@@ -111,7 +114,7 @@ export const BentoStockMetricsCard: React.FC<BentoStockMetricsCardProps> = ({ cu
         <p className="status-summary-desc">{summaryText}</p>
       </div>
 
-      {/* 4. Per-Sensor Trapezoidal Membership Breakdown */}
+      {/* 4. Per-Sensor Suitability Breakdown */}
       <div className="stock-factors-section">
         <div className="factors-header">
           <Activity size={11} className="factors-icon" />
@@ -155,7 +158,7 @@ export const BentoStockMetricsCard: React.FC<BentoStockMetricsCardProps> = ({ cu
       <div className="stock-eval-footer">
         <Clock size={10} className="stock-eval-icon" />
         <span className="stock-eval-text">
-          Evaluated: {formatDateTimeGmt7(current.t)} · * items flagged <code>NEEDS_SOURCE</code>
+          {formatDateTimeGmt7(current.t)} · P. ornatus · * flagged <code>NEEDS_SOURCE</code>
         </span>
       </div>
     </div>

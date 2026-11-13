@@ -4946,3 +4946,394 @@ html, body {
   min-height: 54px;
   font-size: 12.5px;
 }
+
+
+/* ==========================================================================
+   Theme Mode Settings & Cold Soft Dark Palette
+   ========================================================================== */
+[data-theme="dark"] {
+  /* Cold Soft Dark Canvas & Matte Surfaces */
+  --bg-canvas: #0b0f17;
+  --bg-surface: #131b26;
+  --bg-surface-hover: #182230;
+  --bg-surface-active: #1d293a;
+  --bg-surface-muted: #0f1620;
+  --bg-inset: #0c121b;
+
+  /* Structural Borders & Dividers */
+  --border-light: #223044;
+  --border-medium: #2d3f58;
+  --border-focus: #38bdf8;
+
+  /* Brand & Accent */
+  --accent-primary: #38bdf8;
+  --accent-primary-light: #7dd3fc;
+  --accent-primary-bg: rgba(56, 189, 248, 0.12);
+  --accent-primary-border: rgba(56, 189, 248, 0.28);
+  --accent-teal: #2dd4bf;
+  --accent-teal-bg: rgba(45, 212, 191, 0.12);
+
+  /* Status Colors — Soft Dark Tones */
+  --status-normal: #34d399;
+  --status-normal-bg: rgba(52, 211, 153, 0.12);
+  --status-normal-border: rgba(52, 211, 153, 0.32);
+  --status-normal-text: #6ee7b7;
+
+  --status-warning: #fbbf24;
+  --status-warning-bg: rgba(251, 191, 36, 0.12);
+  --status-warning-border: rgba(251, 191, 36, 0.32);
+  --status-warning-text: #fcd34d;
+
+  --status-critical: #f87171;
+  --status-critical-bg: rgba(248, 113, 113, 0.12);
+  --status-critical-border: rgba(248, 113, 113, 0.32);
+  --status-critical-text: #fca5a5;
+
+  --status-unknown: #64748b;
+  --status-unknown-bg: rgba(100, 116, 139, 0.12);
+  --status-unknown-border: rgba(100, 116, 139, 0.28);
+  --status-unknown-text: #94a3b8;
+
+  /* Typography */
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-muted: #475569;
+  --text-white: #f8fafc;
+
+  /* Elevation Shadows */
+  --shadow-xs: 0 1px 2px rgba(2, 6, 23, 0.35);
+  --shadow-sm: 0 1px 3px rgba(2, 6, 23, 0.45);
+  --shadow-md: 0 4px 8px rgba(2, 6, 23, 0.50);
+  --shadow-lg: 0 10px 18px rgba(2, 6, 23, 0.55);
+  --shadow-card: 0 1px 2px rgba(2, 6, 23, 0.40);
+  --shadow-card-hover: 0 4px 12px rgba(2, 6, 23, 0.55);
+}
+
+/* Base dark container & scrollbars */
+html[data-theme="dark"],
+html[data-theme="dark"] body,
+html[data-theme="dark"] .app-container,
+html[data-theme="dark"] .app-main {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #223044;
+}
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #2d3f58;
+}
+
+/* Static typography */
+.condition-val,
+.sensor__value,
+.pond-metric-main-val,
+.stock-metric-val,
+.factor-val,
+.factor-grid-val,
+.tooltip-val,
+.stat-value,
+.fuzzy-spec-card__val,
+.bento-forecast-mini__metrics,
+.forecast-view__metrics,
+.forecast-view__table td,
+.mono-text {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Theme segmented control */
+.top-theme-segmented {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: #eef0f4;
+  padding: 2px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-light);
+}
+
+.theme-seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.theme-seg-btn:hover {
+  color: var(--text-primary);
+}
+
+.theme-seg-btn.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="dark"] .top-theme-segmented {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .theme-seg-btn {
+  color: var(--text-tertiary);
+}
+
+html[data-theme="dark"] .theme-seg-btn:hover {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .theme-seg-btn.active {
+  background: var(--accent-primary-bg);
+  color: var(--accent-primary-light);
+  border: 1px solid var(--accent-primary-border);
+  box-shadow: none;
+}
+
+/* Dark mode surface styling */
+html[data-theme="dark"] .top-bar-bento {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .top-nav-pills {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .top-pill-btn {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .top-pill-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+}
+
+html[data-theme="dark"] .top-pill-btn.active {
+  background: var(--bg-surface-active);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary-border);
+  box-shadow: none;
+}
+
+html[data-theme="dark"] .bento-bell-btn {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .bento-bell-btn:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .top-mode-pill {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .top-live-poll-pill {
+  background: var(--accent-primary-bg);
+  border-color: var(--accent-primary-border);
+  color: var(--accent-primary-light);
+}
+
+html[data-theme="dark"] .top-live-poll-pill.paused {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+  color: var(--text-secondary);
+}
+
+/* Dark mode bento cards */
+html[data-theme="dark"] .bento-card,
+html[data-theme="dark"] .chart-card,
+html[data-theme="dark"] .glass-panel,
+html[data-theme="dark"] .sensor,
+html[data-theme="dark"] .forecast-view__card,
+html[data-theme="dark"] .fuzzy-spec-card,
+html[data-theme="dark"] .pipeline-panel,
+html[data-theme="dark"] .alert-center-panel {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .condition-item,
+html[data-theme="dark"] .stock-metric-tile,
+html[data-theme="dark"] .stock-factor-grid-cell,
+html[data-theme="dark"] .stock-factor-item,
+html[data-theme="dark"] .stock-factors-empty,
+html[data-theme="dark"] .consumption-telemetry-item,
+html[data-theme="dark"] .fuzzy-spec-card__grid,
+html[data-theme="dark"] .fuzzy-spec-card__citation,
+html[data-theme="dark"] .pipeline-node,
+html[data-theme="dark"] .alert-item,
+html[data-theme="dark"] .bento-forecast-mini__tile {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .condition-val,
+html[data-theme="dark"] .sensor__value,
+html[data-theme="dark"] .stock-metric-val,
+html[data-theme="dark"] .factor-val,
+html[data-theme="dark"] .factor-grid-val,
+html[data-theme="dark"] .fuzzy-spec-card__val,
+html[data-theme="dark"] .bento-card-title,
+html[data-theme="dark"] .alert-row-title {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .condition-label,
+html[data-theme="dark"] .stock-metric-name,
+html[data-theme="dark"] .factor-name,
+html[data-theme="dark"] .fuzzy-spec-card__label,
+html[data-theme="dark"] .alert-row-desc {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .card-dot-btn,
+html[data-theme="dark"] .bento-icon-btn,
+html[data-theme="dark"] .alerts-more-btn {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .card-dot-btn:hover,
+html[data-theme="dark"] .bento-icon-btn:hover,
+html[data-theme="dark"] .alerts-more-btn:hover {
+  background: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .dot-indicator,
+html[data-theme="dark"] .dot-diagonal {
+  background: var(--text-secondary);
+}
+
+html[data-theme="dark"] .card-dropdown-menu.alerts-dropdown-panel,
+html[data-theme="dark"] .alerts-dropdown-panel {
+  background: var(--bg-surface);
+  border-color: var(--border-medium);
+}
+
+html[data-theme="dark"] .dropdown-menu-item,
+html[data-theme="dark"] .alerts-dropdown-action {
+  color: var(--text-primary);
+}
+
+html[data-theme="dark"] .dropdown-menu-item:hover,
+html[data-theme="dark"] .alerts-dropdown-action:hover {
+  background: var(--bg-surface-hover);
+}
+
+html[data-theme="dark"] .dropdown-menu-item.selected {
+  background: var(--accent-primary-bg);
+  color: var(--accent-primary-light);
+}
+
+html[data-theme="dark"] .btn-bento-dark {
+  background: var(--bg-inset);
+  color: var(--text-primary);
+  border: 1px solid var(--border-medium);
+}
+
+html[data-theme="dark"] .btn-bento-dark:hover {
+  background: var(--bg-surface-hover);
+  border-color: var(--accent-primary-border);
+  color: var(--accent-primary-light);
+}
+
+html[data-theme="dark"] .filter-pill-btn {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .filter-pill-btn.active {
+  background: var(--accent-primary-bg);
+  border-color: var(--accent-primary-border);
+  color: var(--accent-primary-light);
+}
+
+html[data-theme="dark"] .alert-category-tag,
+html[data-theme="dark"] .alert-ack-btn {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .alert-ack-btn:hover {
+  background: var(--accent-primary-bg);
+  border-color: var(--accent-primary-border);
+  color: var(--accent-primary-light);
+}
+
+html[data-theme="dark"] .time-range-pills,
+html[data-theme="dark"] .spark-mode-switch {
+  background: var(--bg-inset);
+  border-color: var(--border-light);
+}
+
+html[data-theme="dark"] .range-pill-btn.active,
+html[data-theme="dark"] .spark-mode-btn.active {
+  background: var(--accent-primary-bg);
+  color: var(--accent-primary-light);
+  border: 1px solid var(--accent-primary-border);
+}
+
+html[data-theme="dark"] .chart-tooltip-floating {
+  background: rgba(19, 27, 38, 0.95);
+  border-color: var(--border-medium);
+}
+
+/* POND HERO: Preserved in both light and dark modes */
+html[data-theme="dark"] .pond-hero-container {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+html[data-theme="dark"] .pond-toggle-glass-pill,
+html[data-theme="dark"] .pond-refresh-glass-btn {
+  background: rgba(19, 27, 38, 0.88);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .pond-toggle-sub-btn {
+  color: var(--text-secondary);
+}
+
+html[data-theme="dark"] .pond-toggle-sub-btn:hover,
+html[data-theme="dark"] .pond-refresh-glass-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-hover);
+}
+
+html[data-theme="dark"] .pond-toggle-sub-btn.active {
+  background: var(--accent-primary-bg);
+  color: var(--accent-primary-light);
+  border: 1px solid var(--accent-primary-border);
+}
+
+html[data-theme="dark"] .pond-chart-wrapper {
+  background: rgba(11, 15, 23, 0.75);
+}
+
+html[data-theme="dark"] .pond-chart-wrapper .chart-card {
+  background: var(--bg-surface);
+  border-color: var(--border-light);
+}

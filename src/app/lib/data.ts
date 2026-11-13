@@ -3,7 +3,7 @@
  *
  * Sources (all in `seal/data/`):
  *  - readings.csv                live log appended by the ESP32 via POST /api/readings
- *  - sensor_log_placeholder.csv  synthetic 5-min placeholder log from the notebooks
+ *  - sensor_log_placeholder.csv  synthetic 5-min placeholder log from Claude_2 (sensor_log_5min_placeholder_v2.csv)
  *  - forecast.json               written by `src/app/(core)/forecast.py`
  *
  * Time zone (Decision D1): fixed to GMT+7 (WIB / Asia/Jakarta).
@@ -302,8 +302,8 @@ function readForecast(now: number): Forecast | null {
     });
     const counts = raw.test_sample_counts ?? {
       test_origins: 427,
-      Optimal: 376,
-      Warning: 44,
+      Optimal: 262,
+      Warning: 158,
       Critical: 7,
     };
     return {
@@ -358,12 +358,22 @@ function buildThresholdAlerts(points: Point[]): ThresholdAlert[] {
     const unit = limiting === 'dissolved_oxygen_mgl' ? '% sat' : info.unit;
     const suit = perSensor[limiting] ?? 0;
     const suitPct = Math.round(suit * 100);
-    const valStr = rawVal != null ? rawVal.toFixed(limiting === 'dissolved_oxygen_mgl' ? 0 : info.decimals) : '—';
-    const direction = rawVal != null && rawVal < info.mf[1] ? 'Below Target' : 'Above Target';
+    const valStr =
+      rawVal != null ? rawVal.toFixed(limiting === 'dissolved_oxygen_mgl' ? 0 : info.decimals) : '—';
+    const direction =
+      info.kind === 'step'
+        ? 'Above Step Limit'
+        : rawVal != null && rawVal < info.mf[1]
+          ? 'Below Target'
+          : 'Above Target';
 
     // Avoid duplicating consecutive identical-sensor alerts unless status changed
     const prev = alerts[alerts.length - 1];
-    if (prev && prev.parameter === limiting && prev.severity === (status === 'Critical' ? 'critical' : 'warning')) {
+    if (
+      prev &&
+      prev.parameter === limiting &&
+      prev.severity === (status === 'Critical' ? 'critical' : 'warning')
+    ) {
       continue;
     }
 
@@ -392,7 +402,7 @@ const SENSOR_JITTER_AMP: Record<SensorKey, number> = {
   salinity_ppt: 0.05,
   dissolved_oxygen_mgl: 0.03,
   ph: 0.015,
-  ammonia_mgl: 0.002,
+  turbidity_ntu: 0.03,
 };
 
 /**
@@ -510,7 +520,9 @@ export function getSnapshot(): Snapshot {
       spacingGuardOk,
       totalBins24h: history24h.length,
       interpolatedBins24h,
-      interpolatedPct24h: Number(((100 * interpolatedBins24h) / Math.max(1, history24h.length)).toFixed(2)),
+      interpolatedPct24h: Number(
+        ((100 * interpolatedBins24h) / Math.max(1, history24h.length)).toFixed(2),
+      ),
     },
     forecast: readForecast(now),
   };

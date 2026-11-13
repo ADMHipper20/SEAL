@@ -97,7 +97,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           />
         </div>
 
-        {/* Column 3 (Right): Fuzzy Suitability, 4-Horizon Forecast Matrix, Data Quality & 5s Sync */}
+        {/* Column 3 (Right): Fuzzy Suitability & FWQI, 4-Horizon Forecast Matrix, Data Quality & 5s Sync */}
         <div className="bento-col bento-col-right">
           <BentoStockMetricsCard current={snapshot.current} />
 
@@ -105,7 +105,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           <div className="bento-card consumption-card consumption-card-compact bento-forecast-mini">
             <div className="consumption-compact-header">
               <div className="card-title-with-info">
-                <TrendingUp size={13} style={{ color: '#0284c7' }} />
+                <TrendingUp size={13} style={{ color: 'var(--accent-primary)' }} />
                 <h3 className="bento-card-title">Ahead Forecast (+30m to +6h)</h3>
               </div>
               <button
@@ -113,7 +113,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 onClick={onNavigateToForecast}
                 className="consumption-pln-badge"
                 style={{ cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: '3px' }}
-                title="Open Full Forecast & Model Benchmarks"
+                title="Open Full Forecast & Statistical Model Benchmarks"
               >
                 <span>Benchmarks</span>
                 <ArrowUpRight size={11} />
@@ -129,6 +129,8 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                       ? SENSOR_INFO[pt.assessment.limiting].shortLabel
                       : 'All optimal';
                     const doSat = doPercent(pt.values);
+                    const fwqiStr =
+                      pt.assessment.fwqi != null ? `FWQI ${pt.assessment.fwqi.toFixed(0)}` : formatPercent(pt.assessment.suitability);
                     return (
                       <div
                         key={label}
@@ -145,15 +147,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                         <div className="bento-forecast-mini__status-row">
                           <span className="bento-forecast-mini__status">{pt.assessment.status}</span>
                           <span className="bento-forecast-mini__sub">
-                            {formatPercent(pt.assessment.suitability)} · {lim}
+                            {fwqiStr} · {lim}
                           </span>
                         </div>
                         <div className="bento-forecast-mini__metrics">
                           <span>{formatValue('temperature_c', pt.values.temperature_c)}°C</span>
                           <span>·</span>
-                          <span>{doSat != null ? `${doSat.toFixed(0)}% DO` : `${formatValue('dissolved_oxygen_mgl', pt.values.dissolved_oxygen_mgl)} mg/L`}</span>
+                          <span>
+                            {doSat != null
+                              ? `${doSat.toFixed(0)}% DO`
+                              : `${formatValue('dissolved_oxygen_mgl', pt.values.dissolved_oxygen_mgl)} mg/L`}
+                          </span>
                           <span>·</span>
-                          <span>{formatValue('ammonia_mgl', pt.values.ammonia_mgl)} NH₃</span>
+                          <span>{formatValue('turbidity_ntu', pt.values.turbidity_ntu)} NTU</span>
                         </div>
                       </div>
                     );
@@ -163,7 +169,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <div className="bento-forecast-mini__footer">
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     <Clock size={11} />
-                    30m Medians → ARIMA / VAR
+                    30m Medians → SARIMA / VAR+Harmonics
                   </span>
                   <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
                     Origin {fc ? formatTime(fc.origin) : '—'} GMT+7
@@ -188,7 +194,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 className="stock-metric-target-tag"
                 title={snapshot.quality.sourceFile}
               >
-                {snapshot.mode === 'live' ? 'readings.csv' : 'placeholder.csv'}
+                {snapshot.mode === 'live' ? 'readings.csv' : 'placeholder_v2.csv'}
               </span>
             </div>
 

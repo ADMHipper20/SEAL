@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useId } from 'react';
-import { Activity, Clock } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
 import type { Point } from '@/app/lib/data';
 import {
   bentoStatusKey,
@@ -38,13 +37,11 @@ const PAD_B = 30;
 const PLOT_W = W - PAD_L - PAD_R;
 const PLOT_H = H - PAD_T - PAD_B;
 
-const PARAM_COLOR: Record<SensorKey, string> = {
-  temperature_c: '#0284c7',
-  salinity_ppt: '#06b6d4',
-  dissolved_oxygen_mgl: '#8b5cf6',
-  ph: '#f59e0b',
-  ammonia_mgl: '#0d9488',
-};
+/**
+ * Restrained Cold Soft Dark line colors (no rainbow overuse, zero gradients).
+ */
+const OBSERVED_COLOR = '#38bdf8';
+const FORECAST_COLOR = '#94a3b8';
 
 interface InteractivePoint {
   idx: number;
@@ -67,10 +64,9 @@ export function TrendChart({
   const [selected, setSelected] = useState<SensorKey>('temperature_c');
   const [range, setRange] = useState<ChartTimeRange>(defaultRange);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-  const uid = useId().replace(/:/g, '');
 
   const info = SENSOR_INFO[selected];
-  const color = PARAM_COLOR[selected];
+  const color = OBSERVED_COLOR;
 
   const activeHistory = useMemo(() => {
     if (range === '5s' && liveStream5s.length > 0) return liveStream5s;
@@ -324,7 +320,7 @@ export function TrendChart({
         ))}
       </div>
 
-      {/* Interactive SVG Chart Area */}
+      {/* Interactive SVG Chart Area (Flat fills, zero gradients) */}
       <div className="interactive-chart-container" style={{ height: compact ? '195px' : '230px' }}>
         <svg
           viewBox={`0 0 ${W} ${H}`}
@@ -335,14 +331,6 @@ export function TrendChart({
           role="img"
           aria-label={`${info.label} interactive telemetry chart`}
         >
-          <defs>
-            <linearGradient id={`area-grad-${uid}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={color} stopOpacity="0.24" />
-              <stop offset="75%" stopColor={color} stopOpacity="0.04" />
-              <stop offset="100%" stopColor={color} stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
           {/* Non-optimal fuzzy status vertical bands */}
           {activeHistory.map((pt, i) => {
             if (pt.assessment.status === 'Optimal' || pt.assessment.status === 'No data') return null;
@@ -356,21 +344,21 @@ export function TrendChart({
                 y={PAD_T}
                 width={Math.max(1, x2 - x1)}
                 height={PLOT_H}
-                fill={mod === 'critical' ? '#ef4444' : '#f59e0b'}
-                opacity={mod === 'critical' ? 0.12 : 0.08}
+                fill={mod === 'critical' ? '#f87171' : '#fbbf24'}
+                opacity={mod === 'critical' ? 0.1 : 0.06}
               />
             );
           })}
 
-          {/* Literature Optimum Band */}
+          {/* Literature Optimum Band (Flat subtle fill) */}
           {selected !== 'dissolved_oxygen_mgl' && bandBot > bandTop && (
             <rect
               x={PAD_L}
               y={bandTop}
               width={PLOT_W}
               height={bandBot - bandTop}
-              fill="#10b981"
-              opacity={0.06}
+              fill="#34d399"
+              opacity={0.05}
             />
           )}
 
@@ -384,7 +372,7 @@ export function TrendChart({
                   x2={W - PAD_R}
                   y1={y}
                   y2={y}
-                  stroke="#e2e8f0"
+                  stroke="#1f2c3f"
                   strokeDasharray="4 4"
                 />
                 <text
@@ -392,7 +380,7 @@ export function TrendChart({
                   y={y + 4}
                   textAnchor="end"
                   fontSize="10.5"
-                  fill="#64748b"
+                  fill="#8b9bb4"
                   fontFamily="var(--font-jetbrains-mono), monospace"
                 >
                   {val.toFixed(info.decimals)}
@@ -401,7 +389,7 @@ export function TrendChart({
             );
           })}
 
-          {/* Forecast Origin Divider Line & Top Label (Never overlaps bottom X-axis timestamps) */}
+          {/* Forecast Origin Divider Line & Top Label */}
           {activeForecast.length > 0 && activeHistory.length > 0 && (
             <g>
               <rect
@@ -409,15 +397,15 @@ export function TrendChart({
                 y={PAD_T}
                 width={Math.max(0, W - PAD_R - xOf(lastHistIdx))}
                 height={PLOT_H}
-                fill="#0d9488"
-                opacity="0.035"
+                fill="#94a3b8"
+                opacity="0.04"
               />
               <line
                 x1={xOf(lastHistIdx)}
                 x2={xOf(lastHistIdx)}
                 y1={PAD_T}
                 y2={PAD_T + PLOT_H}
-                stroke="#94a3b8"
+                stroke="#475569"
                 strokeWidth="1.2"
                 strokeDasharray="4 4"
               />
@@ -426,8 +414,8 @@ export function TrendChart({
                 y={PAD_T + 11}
                 textAnchor={xOf(lastHistIdx) > W - 130 ? 'end' : 'start'}
                 fontSize="10"
-                fontWeight="700"
-                fill="#0d9488"
+                fontWeight="600"
+                fill="#94a3b8"
                 fontFamily="var(--font-jetbrains-mono), monospace"
               >
                 +{forecastHours}h Forecast →
@@ -435,14 +423,14 @@ export function TrendChart({
             </g>
           )}
 
-          {/* Monotone Area & Spline for Observed / 5s Live Stream */}
-          {histAreaPath && <path d={histAreaPath} fill={`url(#area-grad-${uid})`} />}
+          {/* Flat Solid Area & Monotone Spline for Observed / 5s Live Stream */}
+          {histAreaPath && <path d={histAreaPath} fill={color} fillOpacity="0.07" />}
           {histSplinePath && (
             <path
               d={histSplinePath}
               fill="none"
               stroke={color}
-              strokeWidth="2.3"
+              strokeWidth="2.0"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
@@ -453,30 +441,30 @@ export function TrendChart({
             <path
               d={fcSplinePath}
               fill="none"
-              stroke="#0d9488"
-              strokeWidth="2.2"
+              stroke={FORECAST_COLOR}
+              strokeWidth="1.9"
               strokeDasharray="5 4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           )}
 
-          {/* Latest Observed Point Pulse in 5s Live Mode */}
+          {/* Latest Observed Point Indicator in 5s Live Mode */}
           {range === '5s' && histCoords.length > 0 && hovered === null && (
             <g>
               <circle
                 cx={histCoords[histCoords.length - 1].x}
                 cy={histCoords[histCoords.length - 1].y}
-                r="6.5"
+                r="5.5"
                 fill={color}
-                opacity="0.2"
+                opacity="0.18"
               />
               <circle
                 cx={histCoords[histCoords.length - 1].x}
                 cy={histCoords[histCoords.length - 1].y}
-                r="3.2"
+                r="3.0"
                 fill={color}
-                stroke="#ffffff"
+                stroke="#131b26"
                 strokeWidth="1.5"
               />
             </g>
@@ -490,30 +478,30 @@ export function TrendChart({
                 y1={PAD_T}
                 x2={hovered.x}
                 y2={PAD_T + PLOT_H}
-                stroke={hovered.kind === 'forecast' ? '#0d9488' : color}
-                strokeWidth="1.3"
+                stroke={hovered.kind === 'forecast' ? FORECAST_COLOR : color}
+                strokeWidth="1.2"
                 strokeDasharray="3 3"
-                opacity="0.75"
+                opacity="0.8"
               />
               <circle
                 cx={hovered.x}
                 cy={hovered.y}
-                r="7.5"
-                fill={hovered.kind === 'forecast' ? '#0d9488' : color}
-                opacity="0.2"
+                r="6.5"
+                fill={hovered.kind === 'forecast' ? FORECAST_COLOR : color}
+                opacity="0.18"
               />
               <circle
                 cx={hovered.x}
                 cy={hovered.y}
-                r="4.2"
-                fill="#ffffff"
-                stroke={hovered.kind === 'forecast' ? '#0d9488' : color}
-                strokeWidth="2.4"
+                r="3.8"
+                fill="#131b26"
+                stroke={hovered.kind === 'forecast' ? FORECAST_COLOR : color}
+                strokeWidth="2.2"
               />
             </g>
           )}
 
-          {/* Evenly-Spaced X-Axis Timestamp Labels (No Overlap) */}
+          {/* Evenly-Spaced X-Axis Timestamp Labels */}
           {xTickIndices.map((idx, pos) => {
             const pt = allSeriesPoints[idx];
             if (!pt) return null;
@@ -528,7 +516,7 @@ export function TrendChart({
                 y={H - 8}
                 textAnchor={anchor}
                 fontSize="10.5"
-                fill={isFcTick ? '#0d9488' : '#64748b'}
+                fill={isFcTick ? '#cbd5e1' : '#8b9bb4'}
                 fontWeight={isFcTick ? '600' : '400'}
                 fontFamily="var(--font-jetbrains-mono), monospace"
               >
@@ -540,7 +528,7 @@ export function TrendChart({
           })}
         </svg>
 
-        {/* Floating Glass Tooltip on Hover / Drag */}
+        {/* Floating Tooltip on Hover / Drag */}
         {hovered && (
           <div
             className="chart-tooltip-floating"
@@ -554,7 +542,7 @@ export function TrendChart({
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                 <span
                   className="tooltip-indicator-dot"
-                  style={{ background: hovered.kind === 'forecast' ? '#0d9488' : color }}
+                  style={{ background: hovered.kind === 'forecast' ? FORECAST_COLOR : color }}
                 />
                 <span className="tooltip-param-name">{info.shortLabel}</span>
               </span>
@@ -568,9 +556,7 @@ export function TrendChart({
             </div>
 
             <div className="tooltip-value-row">
-              <span className="tooltip-val">
-                {hovered.val.toFixed(info.decimals)}
-              </span>
+              <span className="tooltip-val">{hovered.val.toFixed(info.decimals)}</span>
               <span className="tooltip-unit">
                 {info.unit}
                 {hoveredDoSat != null ? ` (${hoveredDoSat.toFixed(0)}% sat)` : ''}
@@ -578,11 +564,24 @@ export function TrendChart({
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span className={`condition-status-pill status-${hoveredStatusKey}`} style={{ fontSize: '9.5px', padding: '1px 6px' }}>
+              <span
+                className={`condition-status-pill status-${hoveredStatusKey}`}
+                style={{ fontSize: '9.5px', padding: '1px 6px' }}
+              >
                 {hoveredStatus}
               </span>
-              <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-secondary)', fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
-                Suitability {formatPercent(hoveredSuit)}
+              <span
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  color: 'var(--text-secondary)',
+                  fontFamily: 'var(--font-jetbrains-mono), monospace',
+                }}
+              >
+                μ={formatPercent(hoveredSuit)}
+                {hovered.point.assessment.fwqi != null
+                  ? ` · FWQI ${hovered.point.assessment.fwqi.toFixed(1)}`
+                  : ''}
               </span>
             </div>
 

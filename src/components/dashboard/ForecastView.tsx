@@ -10,7 +10,7 @@ import {
   formatTime,
   formatValue,
 } from '@/app/lib/format';
-import { SENSORS, SENSOR_INFO, doPercent, limitingReason } from '@/app/lib/water';
+import { SENSORS, SENSOR_INFO, TARGET_SPECIES, doPercent, limitingReason } from '@/app/lib/water';
 import { TrendChart } from '@/components/dashboard/TrendChart';
 
 interface ForecastViewProps {
@@ -32,7 +32,7 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
     return (
       <div className="forecast-view">
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 700, margin: 0 }}>
+          <h1 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>
             Predictive Water-Quality Forecasting
           </h1>
           <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem', fontSize: '0.84rem' }}>
@@ -59,11 +59,11 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.02em' }}>
-            Time-Series Forecasting (30 min – 6 h Ahead)
+          <h1 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
+            Classical Statistical Time-Series Forecasting (30 min – 6 h Ahead)
           </h1>
           <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '3px 0 0' }}>
-            ARIMA / SARIMA (s=48) / VAR + daily harmonics forecasts evaluated with literature trapezoidal suitability · Origin:{' '}
+            ARIMA / SARIMA (s=48) / VAR + daily harmonics forecasts passed through literature fuzzy rules ({TARGET_SPECIES.scientificName}) · Origin:{' '}
             <strong>{formatDateTimeGmt7(forecast.origin)}</strong> (
             {mode === 'placeholder' ? 'Placeholder Data' : 'Live Telemetry'})
           </p>
@@ -84,34 +84,47 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
         </div>
       )}
 
-      {/* 1. Predicted Status Cards across 30 min, 1 h, 3 h, 6 h (Clean Neutral Bento Cards) */}
+      {/* 1. Predicted Status Cards across 30 min, 1 h, 3 h, 6 h */}
       <div className="forecast-view__cards">
         {horizonSteps.map(({ label, idx }) => {
           const pt = forecast.steps[idx];
-          const { status, suitability, limiting } = pt.assessment;
+          const { status, suitability, fwqi, limiting } = pt.assessment;
           const stKey = bentoStatusKey(status);
           const doSat = doPercent(pt.values);
 
           return (
             <div key={label} className="forecast-view__card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '11.5px', fontWeight: 700, color: 'var(--text-secondary)' }}>
-                  {label} · <span style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontWeight: 500 }}>{formatTime(pt.t)}</span>
+                <span style={{ fontSize: '11.5px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  {label} ·{' '}
+                  <span style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontWeight: 500 }}>
+                    {formatTime(pt.t)}
+                  </span>
                 </span>
                 <span className={`condition-status-pill status-${stKey}`}>{status}</span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-                  <span style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-                    {formatPercent(suitability)}
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                  <span
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 700,
+                      color: 'var(--text-primary)',
+                      fontFamily: 'var(--font-jetbrains-mono), monospace',
+                    }}
+                  >
+                    {fwqi != null ? fwqi.toFixed(1) : '—'}
                   </span>
                   <span style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 600 }}>
-                    Suitability
+                    FWQI · min(μ)={formatPercent(suitability)}
                   </span>
                 </div>
                 <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>
-                  Limiting: <strong style={{ color: 'var(--text-primary)' }}>{limiting ? SENSOR_INFO[limiting].shortLabel : 'None'}</strong>
+                  Limiting:{' '}
+                  <strong style={{ color: 'var(--text-primary)' }}>
+                    {limiting ? SENSOR_INFO[limiting].shortLabel : 'None'}
+                  </strong>
                 </span>
               </div>
 
@@ -127,7 +140,14 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
                     <div style={{ fontSize: '10.5px', color: 'var(--text-tertiary)', fontWeight: 600 }}>
                       {SENSOR_INFO[k].shortLabel}
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: '11.5px', color: 'var(--text-primary)', fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        fontSize: '11.5px',
+                        color: 'var(--text-primary)',
+                        fontFamily: 'var(--font-jetbrains-mono), monospace',
+                      }}
+                    >
                       {formatValue(k, pt.values[k])} {SENSOR_INFO[k].unit}
                       {k === 'dissolved_oxygen_mgl' && doSat != null
                         ? ` (${doSat.toFixed(0)}%)`
@@ -150,15 +170,15 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
         defaultRange="24h"
       />
 
-      {/* 3. Selected Models per Sensor (chosen on validation MAE) */}
+      {/* 3. Selected Classical Statistical Models per Sensor (chosen on validation MAE, Decision D12) */}
       <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
           <div>
-            <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
-              Validation-Selected Model per Sensor
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+              Validation-Selected Classical Statistical Model per Sensor (Notebook 02 · Decision D12)
             </h2>
-            <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
-              Lowest mean MAE across 30 min, 1 h, 3 h, and 6 h horizons on the chronological validation split (60 / 20 / 20).
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
+              Lowest mean MAE across 30 min, 1 h, 3 h, and 6 h horizons on the chronological validation split (60 / 20 / 20). ML/DL models (LightGBM, Random Forest, GRU, LSTM, TCN) in Notebook 04 did not pass the ≥ +2.0 FWQI skill threshold on validation and are excluded (Rule R16 &amp; R17).
             </p>
           </div>
           <span style={{ fontSize: '11.5px', color: 'var(--text-tertiary)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
@@ -180,7 +200,15 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
               <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', fontWeight: 600 }}>
                 {SENSOR_INFO[k].label}
               </div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px', fontFamily: 'var(--font-jetbrains-mono), monospace' }}>
+              <div
+                style={{
+                  fontSize: '12.5px',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  marginTop: '2px',
+                  fontFamily: 'var(--font-jetbrains-mono), monospace',
+                }}
+              >
                 {forecast.models[k] ?? '—'}
               </div>
             </div>
@@ -192,11 +220,11 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
       {forecast.statusEvaluation.length > 0 && (
         <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div>
-            <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
-              Water-Quality Status Forecast Evaluation vs. Persistence Baseline
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+              Water-Quality Status Forecast Evaluation vs. Persistence Baseline (Notebook 02 §8)
             </h2>
-            <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
-              Out-of-sample test set ({counts.testOrigins} origins: Optimal={counts.Optimal}, Warning={counts.Warning}, Critical={counts.Critical} · placeholder data).
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
+              Out-of-sample test set ({counts.testOrigins} origins: Optimal={counts.Optimal}, Warning={counts.Warning}, Critical={counts.Critical} · placeholder_v2 data).
             </p>
           </div>
 
@@ -231,7 +259,7 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
                       <td>{row.macroF1.toFixed(3)}</td>
                       <td>{(row.alertsCaught * 100).toFixed(1)}%</td>
                       <td>{(row.falseAlarms * 100).toFixed(1)}%</td>
-                      <td>{row.suitabilityMae.toFixed(4)}</td>
+                      <td>{row.suitabilityMae.toFixed(3)}</td>
                     </tr>
                   );
                 })}
@@ -245,10 +273,10 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
       {forecast.sensorSkill.length > 0 && (
         <div className="glass-panel" style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div>
-            <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
-              Sensor Forecast Skill vs. Persistence across Horizons
+            <h2 style={{ fontSize: '0.95rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>
+              Sensor Forecast Skill vs. Persistence across Horizons (Rule R7)
             </h2>
-            <p style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
               Skill ≤ 0% is explicitly reported as <em>no better than persistence</em> (&ldquo;next = last value&rdquo;).
             </p>
           </div>
@@ -282,7 +310,7 @@ export const ForecastView: React.FC<ForecastViewProps> = ({
                         </td>
                         <td
                           style={{
-                            fontWeight: 700,
+                            fontWeight: 600,
                             color: beats ? 'var(--status-normal-text)' : 'var(--text-secondary)',
                           }}
                         >
