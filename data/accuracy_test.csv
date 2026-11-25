@@ -1,81 +1,289 @@
 model,sensor,h,MAE,RMSE,skill_%
 Persistence,temperature_c,1,0.11724,0.13835,0.0
-Persistence,salinity_ppt,1,0.09005,0.17503,0.0
-Persistence,ph,1,0.01287,0.01634,0.0
-Persistence,dissolved_oxygen_mgl,1,0.05911,0.11102,0.0
-Persistence,turbidity_ntu,1,0.4822,1.07748,0.0
 Persistence,temperature_c,2,0.23126,0.26589,0.0
-Persistence,salinity_ppt,2,0.10304,0.19904,0.0
-Persistence,ph,2,0.01486,0.01911,0.0
-Persistence,dissolved_oxygen_mgl,2,0.07262,0.16077,0.0
-Persistence,turbidity_ntu,2,0.8897,1.69127,0.0
+Persistence,temperature_c,3,0.34316,0.39375,0.0
+Persistence,temperature_c,4,0.45389,0.5183,0.0
+Persistence,temperature_c,5,0.56411,0.64278,0.0
 Persistence,temperature_c,6,0.66847,0.76164,0.0
-Persistence,salinity_ppt,6,0.14672,0.32178,0.0
-Persistence,ph,6,0.02858,0.03579,0.0
-Persistence,dissolved_oxygen_mgl,6,0.1398,0.30081,0.0
-Persistence,turbidity_ntu,6,1.99988,2.78405,0.0
+Persistence,temperature_c,7,0.77232,0.87943,0.0
+Persistence,temperature_c,8,0.87061,0.99075,0.0
+Persistence,temperature_c,9,0.9667,1.10082,0.0
+Persistence,temperature_c,10,1.0588,1.20317,0.0
+Persistence,temperature_c,11,1.14842,1.30353,0.0
 Persistence,temperature_c,12,1.22925,1.39547,0.0
-Persistence,salinity_ppt,12,0.21792,0.4547,0.0
+Persistence,ph,1,0.01287,0.01634,0.0
+Persistence,ph,2,0.01486,0.01911,0.0
+Persistence,ph,3,0.01818,0.0232,0.0
+Persistence,ph,4,0.02146,0.02745,0.0
+Persistence,ph,5,0.02476,0.03098,0.0
+Persistence,ph,6,0.02858,0.03579,0.0
+Persistence,ph,7,0.03211,0.03911,0.0
+Persistence,ph,8,0.03571,0.04382,0.0
+Persistence,ph,9,0.03884,0.04684,0.0
+Persistence,ph,10,0.04193,0.0514,0.0
+Persistence,ph,11,0.04532,0.05397,0.0
 Persistence,ph,12,0.04819,0.05781,0.0
-Persistence,dissolved_oxygen_mgl,12,0.21995,0.41054,0.0
+Persistence,turbidity_ntu,1,0.4822,1.07748,0.0
+Persistence,turbidity_ntu,2,0.8897,1.69127,0.0
+Persistence,turbidity_ntu,3,1.21792,2.07704,0.0
+Persistence,turbidity_ntu,4,1.52166,2.36213,0.0
+Persistence,turbidity_ntu,5,1.76499,2.58839,0.0
+Persistence,turbidity_ntu,6,1.99988,2.78405,0.0
+Persistence,turbidity_ntu,7,2.17283,2.94866,0.0
+Persistence,turbidity_ntu,8,2.32436,3.07877,0.0
+Persistence,turbidity_ntu,9,2.43407,3.21247,0.0
+Persistence,turbidity_ntu,10,2.50293,3.28914,0.0
+Persistence,turbidity_ntu,11,2.57201,3.38822,0.0
 Persistence,turbidity_ntu,12,2.58653,3.4312,0.0
-SARIMA (s=48),temperature_c,1,0.04443,0.05244,62.1
-SARIMA (s=48),salinity_ppt,1,0.08753,0.17013,2.8
-SARIMA (s=48),ph,1,0.01237,0.0157,3.9
-SARIMA (s=48),dissolved_oxygen_mgl,1,0.06041,0.11347,-2.2
-SARIMA (s=48),turbidity_ntu,1,0.43446,0.97081,9.9
-SARIMA (s=48),temperature_c,2,0.05851,0.06727,74.7
-SARIMA (s=48),salinity_ppt,2,0.10201,0.19705,1.0
-SARIMA (s=48),ph,2,0.01397,0.01796,6.0
-SARIMA (s=48),dissolved_oxygen_mgl,2,0.0756,0.16737,-4.1
-SARIMA (s=48),turbidity_ntu,2,0.7509,1.42744,15.6
-SARIMA (s=48),temperature_c,6,0.1357,0.15461,79.7
-SARIMA (s=48),salinity_ppt,6,0.14657,0.32145,0.1
-SARIMA (s=48),ph,6,0.02484,0.0311,13.1
-SARIMA (s=48),dissolved_oxygen_mgl,6,0.13057,0.28096,6.6
-SARIMA (s=48),turbidity_ntu,6,1.50591,2.09639,24.7
-SARIMA (s=48),temperature_c,12,0.26183,0.29724,78.7
-SARIMA (s=48),salinity_ppt,12,0.21922,0.45742,-0.6
-SARIMA (s=48),ph,12,0.03889,0.04665,19.3
-SARIMA (s=48),dissolved_oxygen_mgl,12,0.17288,0.32268,21.4
-SARIMA (s=48),turbidity_ntu,12,1.83385,2.43272,29.1
-VAR + daily harmonics,temperature_c,1,0.04115,0.04856,64.9
-VAR + daily harmonics,salinity_ppt,1,0.09176,0.17835,-1.9
-VAR + daily harmonics,ph,1,0.0117,0.01485,9.1
-VAR + daily harmonics,dissolved_oxygen_mgl,1,0.061,0.11458,-3.2
-VAR + daily harmonics,turbidity_ntu,1,0.51596,1.15291,-7.0
-VAR + daily harmonics,temperature_c,2,0.05643,0.06488,75.6
-VAR + daily harmonics,salinity_ppt,2,0.10912,0.21078,-5.9
-VAR + daily harmonics,ph,2,0.01266,0.01628,14.8
-VAR + daily harmonics,dissolved_oxygen_mgl,2,0.07415,0.16415,-2.1
-VAR + daily harmonics,turbidity_ntu,2,0.88258,1.67774,0.8
-VAR + daily harmonics,temperature_c,6,0.12768,0.14547,80.9
-VAR + daily harmonics,salinity_ppt,6,0.17959,0.39385,-22.4
-VAR + daily harmonics,ph,6,0.01818,0.02276,36.4
-VAR + daily harmonics,dissolved_oxygen_mgl,6,0.11576,0.24907,17.2
-VAR + daily harmonics,turbidity_ntu,6,1.25593,1.74838,37.2
-VAR + daily harmonics,temperature_c,12,0.24831,0.28189,79.8
-VAR + daily harmonics,salinity_ppt,12,0.28024,0.58474,-28.6
-VAR + daily harmonics,ph,12,0.02457,0.02948,49.0
-VAR + daily harmonics,dissolved_oxygen_mgl,12,0.13725,0.25618,37.6
-VAR + daily harmonics,turbidity_ntu,12,1.52088,2.01755,41.2
-Selected on validation,temperature_c,1,0.04115,0.04856,64.9
-Selected on validation,salinity_ppt,1,0.08753,0.17013,2.8
-Selected on validation,ph,1,0.0117,0.01485,9.1
-Selected on validation,dissolved_oxygen_mgl,1,0.061,0.11458,-3.2
-Selected on validation,turbidity_ntu,1,0.51596,1.15291,-7.0
-Selected on validation,temperature_c,2,0.05643,0.06488,75.6
-Selected on validation,salinity_ppt,2,0.10201,0.19705,1.0
-Selected on validation,ph,2,0.01266,0.01628,14.8
-Selected on validation,dissolved_oxygen_mgl,2,0.07415,0.16415,-2.1
-Selected on validation,turbidity_ntu,2,0.88258,1.67774,0.8
-Selected on validation,temperature_c,6,0.12768,0.14547,80.9
-Selected on validation,salinity_ppt,6,0.14657,0.32145,0.1
-Selected on validation,ph,6,0.01818,0.02276,36.4
-Selected on validation,dissolved_oxygen_mgl,6,0.11576,0.24907,17.2
-Selected on validation,turbidity_ntu,6,1.25593,1.74838,37.2
-Selected on validation,temperature_c,12,0.24831,0.28189,79.8
-Selected on validation,salinity_ppt,12,0.21922,0.45742,-0.6
-Selected on validation,ph,12,0.02457,0.02948,49.0
-Selected on validation,dissolved_oxygen_mgl,12,0.13725,0.25618,37.6
-Selected on validation,turbidity_ntu,12,1.52088,2.01755,41.2
+Seasonal naive,temperature_c,1,0.5502,0.67914,-369.28839
+Seasonal naive,temperature_c,2,0.55072,0.67829,-138.13291
+Seasonal naive,temperature_c,3,0.55006,0.67909,-60.29004
+Seasonal naive,temperature_c,4,0.54999,0.67792,-21.17059
+Seasonal naive,temperature_c,5,0.54969,0.67893,2.55579
+Seasonal naive,temperature_c,6,0.54999,0.67792,17.72498
+Seasonal naive,temperature_c,7,0.54947,0.67881,28.85435
+Seasonal naive,temperature_c,8,0.54977,0.67782,36.85272
+Seasonal naive,temperature_c,9,0.54962,0.67889,43.14483
+Seasonal naive,temperature_c,10,0.54988,0.67788,48.06636
+Seasonal naive,temperature_c,11,0.54969,0.67893,52.13485
+Seasonal naive,temperature_c,12,0.5501,0.67798,55.24961
+Seasonal naive,ph,1,0.03951,0.05917,-206.91328
+Seasonal naive,ph,2,0.04047,0.05897,-172.34043
+Seasonal naive,ph,3,0.03916,0.05873,-115.41765
+Seasonal naive,ph,4,0.04015,0.05852,-87.07038
+Seasonal naive,ph,5,0.03892,0.05843,-57.21268
+Seasonal naive,ph,6,0.03985,0.05803,-39.41008
+Seasonal naive,ph,7,0.03855,0.05788,-20.04376
+Seasonal naive,ph,8,0.03948,0.05751,-10.55738
+Seasonal naive,ph,9,0.03819,0.05736,1.69815
+Seasonal naive,ph,10,0.03915,0.05696,6.64619
+Seasonal naive,ph,11,0.03781,0.05683,16.57049
+Seasonal naive,ph,12,0.03876,0.0564,19.56258
+Seasonal naive,turbidity_ntu,1,2.60878,4.24554,-441.01506
+Seasonal naive,turbidity_ntu,2,2.57752,4.18902,-189.70782
+Seasonal naive,turbidity_ntu,3,2.60785,4.24519,-114.12364
+Seasonal naive,turbidity_ntu,4,2.57623,4.18858,-69.30358
+Seasonal naive,turbidity_ntu,5,2.60656,4.24481,-47.68128
+Seasonal naive,turbidity_ntu,6,2.57529,4.18832,-28.77218
+Seasonal naive,turbidity_ntu,7,2.60621,4.24472,-19.94503
+Seasonal naive,turbidity_ntu,8,2.57459,4.18817,-10.76574
+Seasonal naive,turbidity_ntu,9,2.60562,4.24462,-7.04767
+Seasonal naive,turbidity_ntu,10,2.57447,4.18816,-2.85848
+Seasonal naive,turbidity_ntu,11,2.6055,4.2446,-1.30207
+Seasonal naive,turbidity_ntu,12,2.57342,4.18807,0.50704
+ARIMA,temperature_c,1,0.04398,0.05564,62.48779
+ARIMA,temperature_c,2,0.05857,0.08289,74.67242
+ARIMA,temperature_c,3,0.07522,0.11401,78.08135
+ARIMA,temperature_c,4,0.09136,0.14334,79.87096
+ARIMA,temperature_c,5,0.11411,0.17912,79.77091
+ARIMA,temperature_c,6,0.1319,0.20766,80.26796
+ARIMA,temperature_c,7,0.15347,0.24223,80.12911
+ARIMA,temperature_c,8,0.17596,0.26972,79.78925
+ARIMA,temperature_c,9,0.19942,0.30278,79.3709
+ARIMA,temperature_c,10,0.22103,0.32936,79.12423
+ARIMA,temperature_c,11,0.24308,0.35866,78.8339
+ARIMA,temperature_c,12,0.26678,0.38441,78.29702
+ARIMA,ph,1,0.01238,0.01553,3.81857
+ARIMA,ph,2,0.01418,0.01802,4.60088
+ARIMA,ph,3,0.01713,0.02199,5.7518
+ARIMA,ph,4,0.0203,0.02577,5.42213
+ARIMA,ph,5,0.02282,0.02912,7.81947
+ARIMA,ph,6,0.0266,0.03367,6.92173
+ARIMA,ph,7,0.03001,0.03742,6.53157
+ARIMA,ph,8,0.03375,0.04211,5.491
+ARIMA,ph,9,0.03724,0.04564,4.13379
+ARIMA,ph,10,0.04079,0.05077,2.73262
+ARIMA,ph,11,0.04449,0.05387,1.82729
+ARIMA,ph,12,0.04786,0.05813,0.66451
+ARIMA,turbidity_ntu,1,0.46962,1.03835,2.60927
+ARIMA,turbidity_ntu,2,0.90005,1.63272,-1.16362
+ARIMA,turbidity_ntu,3,1.22569,1.98877,-0.63827
+ARIMA,turbidity_ntu,4,1.52607,2.22918,-0.28994
+ARIMA,turbidity_ntu,5,1.7238,2.41968,2.33345
+ARIMA,turbidity_ntu,6,1.90984,2.56424,4.50221
+ARIMA,turbidity_ntu,7,2.01084,2.68452,7.45533
+ARIMA,turbidity_ntu,8,2.09816,2.77091,9.73139
+ARIMA,turbidity_ntu,9,2.13128,2.85996,12.43991
+ARIMA,turbidity_ntu,10,2.1604,2.90849,13.68499
+ARIMA,turbidity_ntu,11,2.15371,2.97068,16.26368
+ARIMA,turbidity_ntu,12,2.15327,2.99924,16.7509
+SARIMA (s=48),temperature_c,1,0.04447,0.05622,62.07322
+SARIMA (s=48),temperature_c,2,0.05846,0.08126,74.72315
+SARIMA (s=48),temperature_c,3,0.07825,0.11003,77.19796
+SARIMA (s=48),temperature_c,4,0.09341,0.13693,79.42006
+SARIMA (s=48),temperature_c,5,0.11644,0.1695,79.35788
+SARIMA (s=48),temperature_c,6,0.13559,0.1948,79.71651
+SARIMA (s=48),temperature_c,7,0.1585,0.22547,79.4778
+SARIMA (s=48),temperature_c,8,0.17865,0.24897,79.47934
+SARIMA (s=48),temperature_c,9,0.20217,0.27822,79.08671
+SARIMA (s=48),temperature_c,10,0.22207,0.30054,79.0263
+SARIMA (s=48),temperature_c,11,0.24386,0.32669,78.76567
+SARIMA (s=48),temperature_c,12,0.26204,0.34886,78.68284
+SARIMA (s=48),ph,1,0.01236,0.01543,3.95147
+SARIMA (s=48),ph,2,0.01385,0.01774,6.77104
+SARIMA (s=48),ph,3,0.01697,0.02132,6.65336
+SARIMA (s=48),ph,4,0.01898,0.02477,11.56555
+SARIMA (s=48),ph,5,0.02181,0.02736,11.90067
+SARIMA (s=48),ph,6,0.02418,0.03093,15.40653
+SARIMA (s=48),ph,7,0.02708,0.03356,15.67705
+SARIMA (s=48),ph,8,0.02935,0.03669,17.83276
+SARIMA (s=48),ph,9,0.03173,0.03879,18.30999
+SARIMA (s=48),ph,10,0.03341,0.04194,20.33504
+SARIMA (s=48),ph,11,0.03568,0.04352,21.2685
+SARIMA (s=48),ph,12,0.03733,0.04591,22.52747
+SARIMA (s=48),turbidity_ntu,1,0.43467,0.94859,9.858
+SARIMA (s=48),turbidity_ntu,2,0.75062,1.37277,15.63132
+SARIMA (s=48),turbidity_ntu,3,1.02633,1.78741,15.73021
+SARIMA (s=48),turbidity_ntu,4,1.20021,1.9434,21.12487
+SARIMA (s=48),turbidity_ntu,5,1.39392,2.22239,21.02391
+SARIMA (s=48),turbidity_ntu,6,1.50649,2.32792,24.67109
+SARIMA (s=48),turbidity_ntu,7,1.62966,2.51519,24.99855
+SARIMA (s=48),turbidity_ntu,8,1.68047,2.57351,27.70179
+SARIMA (s=48),turbidity_ntu,9,1.7531,2.71509,27.97686
+SARIMA (s=48),turbidity_ntu,10,1.77649,2.73807,29.02333
+SARIMA (s=48),turbidity_ntu,11,1.82768,2.84865,28.93978
+SARIMA (s=48),turbidity_ntu,12,1.83319,2.85275,29.12577
+ARIMA + daily harmonics,temperature_c,1,0.0407,0.05416,65.28311
+ARIMA + daily harmonics,temperature_c,2,0.056,0.08125,75.78569
+ARIMA + daily harmonics,temperature_c,3,0.07189,0.10901,79.05031
+ARIMA + daily harmonics,temperature_c,4,0.08727,0.13665,80.77341
+ARIMA + daily harmonics,temperature_c,5,0.10838,0.16887,80.78721
+ARIMA + daily harmonics,temperature_c,6,0.12722,0.19402,80.96789
+ARIMA + daily harmonics,temperature_c,7,0.14994,0.22422,80.58569
+ARIMA + daily harmonics,temperature_c,8,0.16885,0.24732,80.60594
+ARIMA + daily harmonics,temperature_c,9,0.19183,0.2754,80.15589
+ARIMA + daily harmonics,temperature_c,10,0.21071,0.29737,80.09969
+ARIMA + daily harmonics,temperature_c,11,0.23097,0.32207,79.88802
+ARIMA + daily harmonics,temperature_c,12,0.2478,0.34403,79.8414
+ARIMA + daily harmonics,ph,1,0.01162,0.0145,9.71586
+ARIMA + daily harmonics,ph,2,0.01252,0.01587,15.75185
+ARIMA + daily harmonics,ph,3,0.014,0.01814,23.00039
+ARIMA + daily harmonics,ph,4,0.01532,0.02002,28.63298
+ARIMA + daily harmonics,ph,5,0.01598,0.02126,35.47466
+ARIMA + daily harmonics,ph,6,0.01737,0.02337,39.21574
+ARIMA + daily harmonics,ph,7,0.01835,0.02466,42.86833
+ARIMA + daily harmonics,ph,8,0.01993,0.02658,44.2005
+ARIMA + daily harmonics,ph,9,0.02027,0.02754,47.81188
+ARIMA + daily harmonics,ph,10,0.02191,0.02965,47.74218
+ARIMA + daily harmonics,ph,11,0.02206,0.03028,51.33402
+ARIMA + daily harmonics,ph,12,0.0226,0.03148,53.09187
+ARIMA + daily harmonics,turbidity_ntu,1,0.51335,1.01373,-6.45964
+ARIMA + daily harmonics,turbidity_ntu,2,0.87309,1.49068,1.86603
+ARIMA + daily harmonics,turbidity_ntu,3,1.07949,1.7663,11.36598
+ARIMA + daily harmonics,turbidity_ntu,4,1.17773,1.88465,22.60267
+ARIMA + daily harmonics,turbidity_ntu,5,1.24062,2.02523,29.70966
+ARIMA + daily harmonics,turbidity_ntu,6,1.27409,2.08925,36.29197
+ARIMA + daily harmonics,turbidity_ntu,7,1.30134,2.20301,40.1084
+ARIMA + daily harmonics,turbidity_ntu,8,1.32455,2.26068,43.01451
+ARIMA + daily harmonics,turbidity_ntu,9,1.36982,2.37332,43.72313
+ARIMA + daily harmonics,turbidity_ntu,10,1.40869,2.43339,43.7183
+ARIMA + daily harmonics,turbidity_ntu,11,1.47582,2.53556,42.62
+ARIMA + daily harmonics,turbidity_ntu,12,1.52599,2.59342,41.00265
+VAR,temperature_c,1,0.04227,0.05596,63.94661
+VAR,temperature_c,2,0.05977,0.08599,74.15516
+VAR,temperature_c,3,0.0778,0.11739,77.32927
+VAR,temperature_c,4,0.09473,0.14958,79.12961
+VAR,temperature_c,5,0.12051,0.18784,78.63774
+VAR,temperature_c,6,0.1424,0.21943,78.69788
+VAR,temperature_c,7,0.16694,0.2575,78.38502
+VAR,temperature_c,8,0.19032,0.2878,78.13983
+VAR,temperature_c,9,0.21957,0.32495,77.28705
+VAR,temperature_c,10,0.24248,0.35379,77.09862
+VAR,temperature_c,11,0.26603,0.38609,76.83546
+VAR,temperature_c,12,0.29166,0.41378,76.27336
+VAR,ph,1,0.01146,0.0143,11.00071
+VAR,ph,2,0.01249,0.01584,15.97595
+VAR,ph,3,0.01392,0.01774,23.4201
+VAR,ph,4,0.01545,0.01982,28.03631
+VAR,ph,5,0.01604,0.02091,35.20787
+VAR,ph,6,0.01784,0.02317,37.57225
+VAR,ph,7,0.01884,0.02465,41.32542
+VAR,ph,8,0.02074,0.02687,41.9347
+VAR,ph,9,0.02142,0.02806,44.86471
+VAR,ph,10,0.0236,0.03085,43.71302
+VAR,ph,11,0.02359,0.0312,47.9487
+VAR,ph,12,0.02521,0.03318,47.67052
+VAR,turbidity_ntu,1,0.4967,1.03704,-3.00577
+VAR,turbidity_ntu,2,0.91271,1.61823,-2.58638
+VAR,turbidity_ntu,3,1.20318,1.97209,1.20954
+VAR,turbidity_ntu,4,1.45592,2.20412,4.32069
+VAR,turbidity_ntu,5,1.61413,2.40079,8.5471
+VAR,turbidity_ntu,6,1.75088,2.53653,12.45085
+VAR,turbidity_ntu,7,1.81366,2.65603,16.52997
+VAR,turbidity_ntu,8,1.86163,2.73219,19.90791
+VAR,turbidity_ntu,9,1.8792,2.81188,22.79604
+VAR,turbidity_ntu,10,1.89294,2.84964,24.3709
+VAR,turbidity_ntu,11,1.90588,2.90559,25.89951
+VAR,turbidity_ntu,12,1.90923,2.92487,26.18588
+VAR + daily harmonics,temperature_c,1,0.04097,0.05429,65.05371
+VAR + daily harmonics,temperature_c,2,0.0564,0.08158,75.61215
+VAR + daily harmonics,temperature_c,3,0.07226,0.1092,78.94319
+VAR + daily harmonics,temperature_c,4,0.08787,0.13669,80.64096
+VAR + daily harmonics,temperature_c,5,0.10869,0.16877,80.73164
+VAR + daily harmonics,temperature_c,6,0.12725,0.19385,80.96435
+VAR + daily harmonics,temperature_c,7,0.15049,0.22407,80.51428
+VAR + daily harmonics,temperature_c,8,0.16985,0.24708,80.49072
+VAR + daily harmonics,temperature_c,9,0.19286,0.27529,80.04928
+VAR + daily harmonics,temperature_c,10,0.21152,0.29709,80.02276
+VAR + daily harmonics,temperature_c,11,0.23025,0.32186,79.95056
+VAR + daily harmonics,temperature_c,12,0.24907,0.34356,79.73845
+VAR + daily harmonics,ph,1,0.01146,0.01418,11.00167
+VAR + daily harmonics,ph,2,0.01215,0.01534,18.22745
+VAR + daily harmonics,ph,3,0.01366,0.01731,24.84943
+VAR + daily harmonics,ph,4,0.0148,0.01893,31.06918
+VAR + daily harmonics,ph,5,0.01545,0.02011,37.6061
+VAR + daily harmonics,ph,6,0.01659,0.02173,41.95916
+VAR + daily harmonics,ph,7,0.01737,0.02312,45.90763
+VAR + daily harmonics,ph,8,0.01869,0.02469,47.66857
+VAR + daily harmonics,ph,9,0.01908,0.02574,50.88819
+VAR + daily harmonics,ph,10,0.02076,0.02797,50.49697
+VAR + daily harmonics,ph,11,0.02047,0.02816,54.82664
+VAR + daily harmonics,ph,12,0.02144,0.0296,55.5015
+VAR + daily harmonics,turbidity_ntu,1,0.51006,1.00813,-5.77821
+VAR + daily harmonics,turbidity_ntu,2,0.86805,1.47149,2.43318
+VAR + daily harmonics,turbidity_ntu,3,1.04794,1.74252,13.95619
+VAR + daily harmonics,turbidity_ntu,4,1.1405,1.84367,25.04879
+VAR + daily harmonics,turbidity_ntu,5,1.19241,1.97808,32.44119
+VAR + daily harmonics,turbidity_ntu,6,1.23132,2.02493,38.43062
+VAR + daily harmonics,turbidity_ntu,7,1.2646,2.13968,41.79932
+VAR + daily harmonics,turbidity_ntu,8,1.29328,2.19058,44.35944
+VAR + daily harmonics,turbidity_ntu,9,1.34312,2.31018,44.81996
+VAR + daily harmonics,turbidity_ntu,10,1.38185,2.37146,44.79048
+VAR + daily harmonics,turbidity_ntu,11,1.45271,2.48505,43.51848
+VAR + daily harmonics,turbidity_ntu,12,1.50263,2.54814,41.90564
+Selected on validation,temperature_c,1,0.0407,0.05416,65.28311
+Selected on validation,temperature_c,2,0.056,0.08125,75.78569
+Selected on validation,temperature_c,3,0.07189,0.10901,79.05031
+Selected on validation,temperature_c,4,0.08727,0.13665,80.77341
+Selected on validation,temperature_c,5,0.10838,0.16887,80.78721
+Selected on validation,temperature_c,6,0.12722,0.19402,80.96789
+Selected on validation,temperature_c,7,0.14994,0.22422,80.58569
+Selected on validation,temperature_c,8,0.16885,0.24732,80.60594
+Selected on validation,temperature_c,9,0.19183,0.2754,80.15589
+Selected on validation,temperature_c,10,0.21071,0.29737,80.09969
+Selected on validation,temperature_c,11,0.23097,0.32207,79.88802
+Selected on validation,temperature_c,12,0.2478,0.34403,79.8414
+Selected on validation,ph,1,0.01162,0.0145,9.71586
+Selected on validation,ph,2,0.01252,0.01587,15.75185
+Selected on validation,ph,3,0.014,0.01814,23.00039
+Selected on validation,ph,4,0.01532,0.02002,28.63298
+Selected on validation,ph,5,0.01598,0.02126,35.47466
+Selected on validation,ph,6,0.01737,0.02337,39.21574
+Selected on validation,ph,7,0.01835,0.02466,42.86833
+Selected on validation,ph,8,0.01993,0.02658,44.2005
+Selected on validation,ph,9,0.02027,0.02754,47.81188
+Selected on validation,ph,10,0.02191,0.02965,47.74218
+Selected on validation,ph,11,0.02206,0.03028,51.33402
+Selected on validation,ph,12,0.0226,0.03148,53.09187
+Selected on validation,turbidity_ntu,1,0.51006,1.00813,-5.77821
+Selected on validation,turbidity_ntu,2,0.86805,1.47149,2.43318
+Selected on validation,turbidity_ntu,3,1.04794,1.74252,13.95619
+Selected on validation,turbidity_ntu,4,1.1405,1.84367,25.04879
+Selected on validation,turbidity_ntu,5,1.19241,1.97808,32.44119
+Selected on validation,turbidity_ntu,6,1.23132,2.02493,38.43062
+Selected on validation,turbidity_ntu,7,1.2646,2.13968,41.79932
+Selected on validation,turbidity_ntu,8,1.29328,2.19058,44.35944
+Selected on validation,turbidity_ntu,9,1.34312,2.31018,44.81996
+Selected on validation,turbidity_ntu,10,1.38185,2.37146,44.79048
+Selected on validation,turbidity_ntu,11,1.45271,2.48505,43.51848
+Selected on validation,turbidity_ntu,12,1.50263,2.54814,41.90564

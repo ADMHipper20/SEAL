@@ -1,263 +1,203 @@
 # SEAL — Smart Environment Aquaculture for Lobster
-### Marine Holding Tank Water-Quality Monitoring & Forecasting System
+### 3-Sensor Marine Holding Tank Water-Quality Monitoring, Fuzzy Suitability & Forecasting System
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.4.3-black?logo=next.js)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.4.6-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.3.0-blue?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Timezone](https://img.shields.io/badge/Timezone-GMT%2B7%20(WIB)-green)](https://en.wikipedia.org/wiki/Time_in_Indonesia)
-[![Target Species](https://img.shields.io/badge/Target%20Species-Panulirus%20ornatus%20(Pearl%20Lobster)-orange)](#biological-profile--target-species)
+[![Hardware Scope](https://img.shields.io/badge/Sensors-3%20Automated%20ESP32%20Probes%20(D7)-0969da)](#1-sensor-suite--hardware-bom-decision-d7)
 
-SEAL (**Smart Environment Aquaculture for Lobster**) is an end-to-end water-quality monitoring, literature-grounded fuzzy suitability inference, and multi-horizon time-series forecasting platform designed specifically for holding tanks of **Pearl Lobster (*Panulirus ornatus*)**.
+SEAL (**Smart Environment Aquaculture for Lobster**) is a real-time water-quality monitoring, literature-grounded fuzzy suitability inference, and classical time-series forecasting web application built for the **Telkom University Surabaya** campus marine holding tank (**Pearl Lobster, *Panulirus ornatus***).
 
 ---
 
 ## Table of Contents
-1. [Overview & System Architecture](#overview--system-architecture)
-2. [Sensor Suite & Hardware Configuration](#sensor-suite--hardware-configuration)
-3. [Biological Profile & Literature Fuzzy Rules](#biological-profile--literature-fuzzy-rules)
-4. [Time-Series Forecasting Engine](#time-series-forecasting-engine)
-5. [Frontend Dashboard Features](#frontend-dashboard-features)
-6. [Getting Started & Installation](#getting-started--installation)
-7. [Repository Layout](#repository-layout)
-8. [Pending Roadmap & Project Milestones (Weeks 9–15)](#pending-roadmap--project-milestones-weeks-915)
+1. [Sensor Suite & Hardware BOM (Decision D7)](#1-sensor-suite--hardware-bom-decision-d7)
+2. [UI/UX Architecture & Synchronized 5s/24h Interaction (Decision D8)](#2-uiux-architecture--synchronized-5s24h-interaction-decision-d8)
+3. [Quick Start (Local Development & Production Build)](#3-quick-start-local-development--production-build)
+4. [Physical Bench-Test Playbook: How to Connect & Test IoT Before Tank Deployment](#4-physical-bench-test-playbook-how-to-connect--test-iot-before-tank-deployment)
+5. [Choosing Your IoT Connection Option (Option A vs. Option B vs. Wokwi)](#5-choosing-your-iot-connection-option-option-a-vs-option-b-vs-wokwi)
+6. [Time-Series Forecasting Pipeline (30 min – 6 h Ahead)](#6-time-series-forecasting-pipeline-30-min--6-h-ahead)
+7. [Repository Layout](#7-repository-layout)
 
 ---
 
-## Overview & System Architecture
+## 1. Sensor Suite & Hardware BOM (Decision D7)
 
-```mermaid
-flowchart TD
-    subgraph Tank ["Marine Holding Tank (Panulirus ornatus)"]
-        Sensors["5-Sensor Telemetry Array\n(Temp, Salinity, pH, DO, Turbidity)"]
-        Skimmer["Protein Skimmer\n(Removes dissolved organics upstream)"]
-        ManualTests["Manual Test Kits\n(Ammonia NH3/NH4+, Nitrite NO2-)"]
-    end
+Per the finalized Electrical Engineering hardware scope (`PLANS.md` §2 & Decision D7), automated ESP32 telemetry logs **3 probes only** via an **ESP32S CH340** microcontroller and **ADS1115 16-bit I2C ADC**:
 
-    subgraph Hardware ["Hardware Ingestion (ESP32 + ADS1115)"]
-        ADC["ADS1115 16-Bit I2C ADC"]
-        ESP["ESP32 Microcontroller (Wi-Fi / Serial)"]
-    end
+| Schema Column (`POST /api/readings`) | Hardware Probe (EE BOM) | Unit | Optimum ($\mu = 1$) | Trapezoid $(a, b, c, d)$ | Literature Source |
+|---|---|---|---|---|---|
+| `temperature_c` | **DS18B20** Waterproof (1-Wire digital) → ESP32 GPIO | °C | `25.0 – 31.0 °C` | `(19, 25, 31, 32)` | Jones (2009), *J World Aquac Soc* 40(6):744–752 *(19 °C `NEEDS_SOURCE`)* |
+| `ph` | **PH-4502C** + electrode → **ADS1115** Channel A0 | pH | `7.80 – 8.40 pH` | `(7.0, 7.8, 8.4, 8.5)` | KepMen LH No. 51/2004 (7.0–8.5) & marine culture guideline |
+| `turbidity_ntu` | **Turbidity Red Board** (optical) → **ADS1115** Channel A1 | NTU | `≤ 5.0 NTU` | `(-∞, -∞, 5.0, 25.0)` | KepMen LH No. 51/2004 marine clarity standard *(25 NTU `NEEDS_SOURCE`)* |
 
-    subgraph Core ["Analytics & Forecasting Engine (Python / Core)"]
-        Agg["30-Min Median Aggregation & Data Hygiene"]
-        TS["Statistical Forecasting\n(VAR + Harmonics, SARIMA s=48)"]
-        ML_Roadmap["ML/DL Forecasters (Roadmap)\n(LightGBM, XGBoost, GRU/LSTM, TFT)"]
-        Fuzzy["Fuzzy Final Engine (Sugeno Product-AND)\nFWQI (0-100) & Suitability μ (0-1)"]
-    end
-
-    subgraph Frontend ["User Interface (Next.js 16 + React 19)"]
-        Bento["Main Bento Grid Dashboard\n(Overview, Forecast, Water Quality, History, Device)"]
-        MiniKiosk["Mini-Display / Kiosk UI (Upcoming)\n(Pure Graph Statistics & Quick Telemetry)"]
-        Theme["Theme Engine\n(Auto/System · Light · Cold Soft Dark)"]
-    end
-
-    Sensors --> ADC --> ESP
-    Skimmer -. Limits organic loading .-> Tank
-    ManualTests -. Manual Event Logs .-> Agg
-    ESP --> Agg
-    Agg --> TS & ML_Roadmap
-    TS --> Fuzzy
-    ML_Roadmap --> Fuzzy
-    Fuzzy --> Bento & MiniKiosk
-```
-
-SEAL continuously ingests 5 physicochemical water parameters, applies zero-order Sugeno product-AND fuzzy inference to evaluate water suitability according to published biological literature, and forecasts future conditions (30 min to 6 hours ahead) so operators can intervene **before** critical thresholds are reached.
+- **Manual & Mechanical Life Support (Excluded from Automated Schema, Rule R3)**:
+  - **Salinity**: Checked manually by staff with an optical refractometer (indicated via badge in `Current Conditions`).
+  - **Dissolved Oxygen (DO)**: Maintained continuously by the 24/7 campus blower.
+  - **Organic / Ammonia Load**: Managed by the 24/7 protein skimmer (no automated ammonia sensor).
+- **Overall Suitability (Decision D5)**: $\mu = \min(\mu_{\text{temp}}, \mu_{\text{pH}}, \mu_{\text{turbidity}})$ → **Optimal** ($\mu = 1.0$), **Warning** ($0 < \mu < 1$), **Critical** ($\mu = 0.0$).
 
 ---
 
-## Sensor Suite & Hardware Configuration
+## 2. UI/UX Architecture & Synchronized 5s/24h Interaction (Decision D8)
 
-In accordance with the project hardware budget (`RAB_CAPSTONE.xlsx`), the telemetry array uses 5 cost-effective, high-durability probes logged via an **ESP32** microcontroller coupled with an **ADS1115 16-bit I2C ADC**:
-
-| Parameter | Sensor Model | Operating Unit | Optimal Range (*P. ornatus*) | Alert Behavior |
-|---|---|---|---|---|
-| **Temperature** | DS18B20 (Waterproof digital probe) | °C | 25.0 – 31.0 °C (Peak: 27.0 °C) | Warning < 25°C or > 31°C; Critical > 32°C |
-| **Salinity** | DFRobot Analog EC (K=10 probe) | ppt / mS/cm | 30.0 – 34.0 ppt | Warning < 30 or > 34 ppt; Critical < 25 or > 38 ppt |
-| **pH** | PH-4502C + Industrial pH electrode | pH scale | 7.80 – 8.40 | Warning < 7.80 or > 8.40; Critical < 7.00 or > 9.00 |
-| **Dissolved Oxygen (DO)**| DFRobot SEN0237 Galvanic DO probe | mg/L (% sat) | ≥ 5.00 mg/L (≥ 80% saturation) | Warning < 5.0 mg/L; Critical < 3.5 mg/L |
-| **Turbidity** | Analog Turbidity Sensor (NTU) | NTU | ≤ 5.0 NTU (KepMen LH 51/2004) | **Warning only (μ=0.5)**; Never Critical (Decision D7) |
-
-> [!IMPORTANT]
-> **Rule R15 — Ammonia & Water Treatment Clarification**:
-> There is **no online ammonia sensor** in the tank. The tank utilizes an industrial **protein skimmer** that extracts dissolved organics *before* they decompose into total ammonia nitrogen (TAN). 
-> **Turbidity is NOT a proxy for ammonia**. Online status indicators cover only the 5 monitored parameters. Manual colorimetric/photometric test kit readings (NH3/NH4+, NO2-) are recorded via the events logging system (`events.csv`).
+- **Spacious Full-Bleed Top `PondHeroVisualizer` Stage**:
+  - Sits at the very top of `Overview`, spanning 100% full width left-to-right (`74vh` height) with a smooth `150px` bottom gradient fade into `var(--bg-canvas)` and zero layout bleeding.
+  - Top-right pill switches between `Static 3D`, `Video`, `Off`, `5s Live Graph`, and `24h Chart`.
+- **Synchronized `Current Conditions` Shelf & Interactive Graph**:
+  - Directly beneath the Pond Hero fade sit 3 compact horizontal sensor cards (`Temperature`, `pH`, `Turbidity`) with a **`5s Live` | `24h`** window toggle.
+  - **State-Aware Card-to-Graph Opening**: When `Current Conditions` is set to **`5s Live`**, clicking any sensor card opens and focuses that sensor's **5-second live graph**. When set to **`24h`**, clicking any sensor card opens and focuses that sensor's **24-hour + forecast graph**.
+- **Simplified 2-Tab Navigation + Responsive Mobile Drawer**:
+  - Desktop navbar shows **`Overview`** and **`About`** (which reveals a horizontal segmented sub-menu bar: `Forecast | Water Quality | Alerts | History | Device`).
+  - Mobile screens (`≤ 768px`) feature a slide-down **Mobile Navigation Drawer** with 1-tap access to all views, theme switching, and stream pause/resume.
+- **WCAG AA/AAA Popular Themes**: **GitHub Primer Light** and **GitHub Dark** palettes with `Auto | Light | Dark` toggle.
 
 ---
 
-## Biological Profile & Literature Fuzzy Rules
+## 3. Quick Start (Local Development & Production Build)
 
-### Target Species: Pearl Lobster (*Panulirus ornatus*)
-- **Growth & Thermal Biology**: *P. ornatus* thrives in tropical marine environments (Jones, 2009; Sachlikidis et al., 2005). Optimum growth occurs at **27 °C**, with acceptable growth between **25–31 °C**, and upper non-lethal threshold at **32 °C**.
-- **Salinity Tolerances**: Optimum salinity is **30–34 ppt** (marine stenohaline with limited euryhaline tolerance).
-- **Water Clarity**: KepMen LH No. 51/2004 marine biota guidelines stipulate coral/lobster waters should remain **≤ 5.0 NTU**.
-
-### Fuzzy Water-Quality Index (FWQI) & Suitability
-SEAL implements a deterministic Sugeno zero-order fuzzy evaluation:
-1. **Parameter Suitabilities ($\mu_i \in [0, 1]$)**: Calculated via trapezoidal membership functions for Temperature, Salinity, pH, and Dissolved Oxygen; step-function for Turbidity.
-2. **Fuzzy Water-Quality Index (FWQI)**:
-   $$\text{FWQI} = 100 \times \left(\prod_{i=1}^5 \mu_i\right)^{1/5}$$
-3. **Fuzzy Status**:
-   $$\mu_{\min} = \min_{i} \mu_i \implies \begin{cases} \text{Optimal}, & \mu_{\min} \ge 0.80 \\ \text{Warning}, & 0.40 \le \mu_{\min} < 0.80 \\ \text{Critical}, & \mu_{\min} < 0.40 \end{cases}$$
-
----
-
-## Time-Series Forecasting Engine
-
-SEAL features a multi-horizon forecasting pipeline (30m, 1h, 3h, 6h ahead):
-- **Aggregation**: Raw 5-minute telemetry is cleaned and downsampled to 30-minute median bins ($\ge 3$ valid readings per bin required).
-- **Validation Winners (Notebook 02)**:
-  - **Temperature, pH, Dissolved Oxygen, Turbidity**: Multi-lag **Vector Autoregression (VAR)** with daily harmonics ($lags=6$).
-  - **Salinity**: Seasonal Autoregressive Integrated Moving Average (**SARIMA** $(1,1,1)\times(1,0,1)_{48}$).
-- **Baseline Discipline (Rule R7)**: All forecasters are evaluated against the **Persistence ("Next = Last Value")** baseline across RMSE, MAE, $R^2$, and Skill Score.
-- **Physical Guard-Rails**: Non-negative physical limits (e.g. `turbidity_ntu >= 0`) and fallback persistence for out-of-bounds extrapolations.
-
----
-
-## Frontend Dashboard Features
-
-Built on **Next.js 16 (Turbopack)** and **React 19**:
-- **Bento Grid Architecture**: High-density, professional layout with zero unnecessary empty space.
-- **5-Second Live Stream Monitoring**: Real-time polling ticker displaying seconds-until-next-sync with manual pause/resume controls.
-- **Interactive Dual-Mode Trend Charts**: SVG charts supporting both 5-second live streams and 24-hour historical/forecast series, hover inspections, and zero gradient lag.
-- **3D Holding Tank Hero Visualizer**: Seamless visual viewport supporting 3D video loop, 3D isometric still image, and minimal telemetry-only off mode.
-- **Theme Engine**: Segmented control supporting **Auto (Device System)**, **Light (Studio Bento)**, and **Cold Soft Dark (Slate/Ice-Blue)** with zero hydration flicker.
-- **Species & Probe Metadata**: Live biological guidelines, RAB probe model notes, and scientific citations prominently displayed.
-
----
-
-## Getting Started & Installation
-
-### Prerequisites
-- **Node.js**: `v20.x` or `v22.x+`
-- **Python**: `3.10+` (with `numpy`, `pandas`, `statsmodels`, `scipy`)
-
-### 1. Clone & Install Dependencies
-```bash
-git clone https://github.com/ADMHipper20/SEAL.git
-cd SEAL/seal
+```powershell
+cd C:\Users\nurul\projects\SEAL\seal
 npm install
-```
 
-### 2. Run Python Forecast Pipeline (Optional if using cached JSON)
-```bash
-python -m src.app.(core).forecast
-```
+# (Optional) Regenerate 3-sensor forecast JSON from placeholder or live CSV
+python "src/app/(core)/forecast.py"
 
-### 3. Launch Development Server
-```bash
+# Start development server at http://localhost:3000
 npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### 4. Build for Production
-```bash
+# Or build & start production server
 npm run build
 npm run start
 ```
 
 ---
 
-## Repository Layout
+## 4. Physical Bench-Test Playbook: How to Connect & Test IoT Before Tank Deployment
 
+Before submerging the probes in the campus lobster tank, run this **4-step physical bench test** on a table with the Electrical Engineering team:
+
+```mermaid
+flowchart LR
+    Step1["Step 1: Start SEAL Web\n(npm run dev on Laptop)"] --> Step2["Step 2: Dry-Run Pipeline Test\n(blynk_bridge.py --simulate)"]
+    Step2 --> Step3["Step 3: Connect Real ESP32\n(Option A Wi-Fi POST or\nOption B Blynk Bridge)"]
+    Step3 --> Step4["Step 4: Cup-of-Water Test &\nReset Before Tank Deploy\n(blynk_bridge.py --reset-live)"]
 ```
-SEAL/
-├── seal/                             # Next.js Application Root
-│   ├── data/                         # CSV and JSON data stores
-│   │   ├── sensor_log_placeholder.csv# 25,920 5-min synthetic readings (v2 Turbidity)
-│   │   ├── accuracy_test.csv         # Model accuracy scorecard vs persistence
-│   │   ├── status_forecast_test.csv  # Status forecast evaluation across test origins
-│   │   └── forecast.json             # Computed multi-step forecast payload
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── (core)/               # Python forecasting & data pipeline
-│   │   │   │   ├── preprocessing.py  # 30-min median aggregation & hygiene
-│   │   │   │   ├── modelling.py      # Statistical VAR & SARIMA model classes
-│   │   │   │   └── forecast.py       # Forecast generation CLI script
-│   │   │   ├── api/readings/         # Next.js telemetry ingestion API route
-│   │   │   ├── lib/                  # TypeScript domain models, data & water logic
-│   │   │   │   ├── water.ts          # Fuzzy inference, FWQI, species boundaries
-│   │   │   │   ├── data.ts           # Snapshot loading & alert synthesis
-│   │   │   │   └── format.ts         # Formatting & timezone utilities (GMT+7)
-│   │   │   ├── styles/styles.css     # Unified Bento Grid & Dark Neo theme CSS
-│   │   │   ├── layout.tsx            # App root layout with theme hydration script
-│   │   │   └── page.tsx              # Main dashboard entry
-│   │   └── components/
-│   │       ├── dashboard/            # Bento cards & views
-│   │       │   ├── OverviewView.tsx
-│   │       │   ├── CurrentConditionsCard.tsx
-│   │       │   ├── TrendChart.tsx
-│   │       │   ├── PondHeroVisualizer.tsx
-│   │       │   ├── BentoStockMetricsCard.tsx
-│   │       │   ├── BentoAlertsList.tsx
-│   │       │   ├── ForecastView.tsx
-│   │       │   ├── WaterQualityView.tsx
-│   │       │   ├── HistoricalDataView.tsx
-│   │       │   └── DeviceStatusView.tsx
-│   │       └── layout/
-│   │           ├── Navbar.tsx        # Top bar with 3-way theme toggle & live stream pill
-│   │           └── Dashboard.tsx     # Client state orchestrator & live polling
-│   └── package.json
-├── Claude_2/                         # Research Notebooks & Experiments
-│   ├── 01_data_exploration_and_plots.ipynb
-│   ├── 02_model_training_evaluation.ipynb  # Statistical model validation
-│   ├── 03_experimental_models.ipynb        # Statistical experimental models
-│   ├── 04_ml_dl_behind_fuzzy.ipynb         # Machine learning / Deep learning experiments
-│   └── ml_dl_scorecard.csv
-└── PLANS.md                          # Master specification, hard rules & decision log
+
+### Step 1 — Start the SEAL Web Server on Your Laptop
+Open **Terminal 1** in `C:\Users\nurul\projects\SEAL\seal`:
+```powershell
+npm run dev
 ```
+Open `http://localhost:3000`. Notice the top-left badge currently says **`PLACEHOLDER · 3 SENSORS · GMT+7`** (because `data/readings.csv` does not exist yet).
+
+### Step 2 — Run a 10-Second Software Dry-Run (Verify `/api/readings` Works)
+Open **Terminal 2** in `C:\Users\nurul\projects\SEAL\seal` and run the built-in bench simulator:
+```powershell
+python scripts/blynk_bridge.py --simulate --count 3 --interval 2
+```
+**What you will see:**
+1. Terminal 2 prints `POST HTTP 201` for 3 consecutive readings and verifies `GET /api/readings -> mode='live'`.
+2. `seal/data/readings.csv` is automatically created with exact columns `timestamp,temperature_c,ph,turbidity_ntu`.
+3. On `http://localhost:3000`, the top-left badge automatically flips from `PLACEHOLDER` to green **`LIVE · 3 SENSORS · GMT+7`**!
+
+### Step 3 — Physical Cup-of-Water Bench Test with EE's Hardware
+Prepare 3 small cups on the bench before going to the lobster tank:
+1. **Temperature Test**: Hold the **DS18B20** steel tip in your fingers or dip in warm water (`~30–33 °C`) → verify `temperature_c` rises on the SEAL `5s Live Graph` and triggers `Warning` above `31.0 °C`.
+2. **pH Buffer Test**: Dip the **PH-4502C** probe in `pH 6.86` neutral buffer (should trigger `Critical` because marine target is `7.8–8.4`), then rinse and dip in `pH 8.1` seawater/alkaline buffer (should turn `Optimal`).
+3. **Turbidity Test**: Place the **Turbidity Red Board** probe in clear water (`< 5.0 NTU` → `Optimal`), then stir in a drop of milk/sediment (`> 5.0 NTU` → `Warning`).
+4. **Disconnected Probe Null-Safety Test (Rule R10)**: Unplug one sensor jumper wire; confirm the payload sends `null` (not `0`) and the CSV stores an empty cell.
+
+### Step 4 — Archive Bench-Test Data Before Real Tank Deployment
+Once the bench test passes, archive the cup-of-water test rows so they do **not** mix with your 2-week real lobster tank dataset (Rule R1 & R10):
+```powershell
+python scripts/blynk_bridge.py --reset-live
+```
+This moves `data/readings.csv` to `data/readings_bench_backup.csv` and returns the dashboard to clean readiness for tank deployment.
 
 ---
 
-## Pending Roadmap & Project Milestones (Weeks 9–15)
+## 5. Choosing Your IoT Connection Option (Option A vs. Option B vs. Wokwi)
 
-```mermaid
-gantt
-    title SEAL Project Timeline (Weeks 9–15)
-    dateFormat  YYYY-MM-DD
-    section Current Week
-    Week 9 (Current Milestone)         :active, w9, 2026-11-10, 2026-11-16
-    section Hardware & Ingestion
-    EE Hardware Final Delivery         :crit, ee, 2026-11-17, 2026-11-23
-    ESP32 Calibration & Ingestion      :calib, 2026-11-24, 2026-11-30
-    section Real Data Capture (2 Weeks)
-    2-Week Real Tank Data Capture      :crit, data_cap, 2026-11-24, 2026-12-07
-    section Modeling & Features
-    Mini-Display Kiosk UI View         :kiosk, 2026-11-17, 2026-11-25
-    ML / DL Advanced Model Testing     :mldl, 2026-12-01, 2026-12-08
-    section Exhibition Preps
-    Exhibition Preparation & Polish    :crit, exhib, 2026-12-08, 2026-12-21
+Full wiring, code snippets, and troubleshooting are in **[docs/HARDWARE_BRIDGE_GUIDE.md](../docs/HARDWARE_BRIDGE_GUIDE.md)**. Here is how to run each option:
+
+### Option A (Recommended): Direct ESP32 Wi-Fi HTTP Push (Can Run Alongside Blynk!)
+Use this when you can flash (or ask EE to add 15 lines to) the ESP32S CH340 sketch.
+1. Connect both your **Laptop** and the **ESP32** to the **same mobile hotspot or dedicated router** (avoids campus Wi-Fi AP isolation).
+2. Find your laptop's IPv4 address in PowerShell:
+   ```powershell
+   ipconfig
+   ```
+   *(Look for `IPv4 Address` under Wireless LAN adapter Wi-Fi, e.g. `192.168.137.1` or `192.168.1.15`.)*
+3. In the ESP32 Arduino sketch (see complete sketch in [docs/HARDWARE_BRIDGE_GUIDE.md](../docs/HARDWARE_BRIDGE_GUIDE.md#4-option-a-recommended-direct-dual-push-from-esp32-httpclient--blynk)), set:
+   ```cpp
+   const char* SEAL_API_URL = "http://192.168.1.15:3000/api/readings";
+   ```
+4. Flash the ESP32 and open the Arduino Serial Monitor (`115200` baud). Every 5 seconds you will see:
+   ```text
+   [SEAL] HTTP 201 | {"temperature_c":27.85,"ph":8.12,"turbidity_ntu":1.40}
+   ```
+
+### Option B (Zero Changes to EE's Firmware!): Blynk Cloud → SEAL Bridge
+Use this if EE has **already flashed Blynk** on the ESP32 and you do not want to re-flash their board.
+1. Ask EE for their **Blynk Auth Token** and which **Virtual Pins** hold Temperature, pH, and Turbidity (e.g. `v0`, `v1`, `v2`).
+2. Keep `npm run dev` running in Terminal 1, and in Terminal 2 run:
+   ```powershell
+   python scripts/blynk_bridge.py --token "PASTE_EE_BLYNK_TOKEN" --temp-pin v0 --ph-pin v1 --turb-pin v2 --interval 5
+   ```
+3. `blynk_bridge.py` polls `https://blynk.cloud/external/api/get` every 5 seconds and pushes the 3 sensor values directly into `http://localhost:3000/api/readings`!
+   *(For the 2-week tank capture, change `--interval 5` to `--interval 300` for 5-minute logging.)*
+
+### Option C: Wokwi Virtual Simulator (No Physical Hardware Needed)
+If you want to test the C++ firmware logic in your browser before EE hands over the board:
+1. Expose your local SEAL server over HTTPS using Cloudflare Quick Tunnel:
+   ```powershell
+   cloudflared tunnel --url http://localhost:3000
+   ```
+2. Paste the `https://xxxx.trycloudflare.com/api/readings` URL into the Wokwi ESP32 sketch (`WIFI_SSID = "Wokwi-GUEST"`).
+
+---
+
+## 6. Time-Series Forecasting Pipeline (30 min – 6 h Ahead)
+
+- **Resampling (Decision D2)**: Raw 5-minute readings are aggregated into **30-minute medians** ($\ge 3$ valid readings per bin; internal gaps $\le 3\text{ h}$ linearly interpolated; coarser spacing refused per Rule R4).
+- **Chronological 60 / 20 / 20 Split (Rules R5–R8)**:
+  - **Temperature (`temperature_c`)**: `ARIMA + daily harmonics` `(2, 1, 2)`
+  - **Acidity (`ph`)**: `ARIMA + daily harmonics` `(1, 1, 1)`
+  - **Turbidity (`turbidity_ntu`)**: `VAR + daily harmonics` (3-sensor multivariate, clipped at $\ge 0\text{ NTU}$)
+- **Refresh Forecasts Anytime**:
+  ```powershell
+  python "src/app/(core)/forecast.py"
+  ```
+
+---
+
+## 7. Repository Layout
+
+```text
+SEAL/
+├── docs/
+│   └── HARDWARE_BRIDGE_GUIDE.md      # Complete ESP32 C++, Blynk Bridge & Wokwi handbook
+├── seal/                             # Next.js 16.4.6 Application Root
+│   ├── data/
+│   │   ├── readings.csv              # Live 3-sensor ESP32 log (created automatically on first POST)
+│   │   ├── sensor_log_placeholder.csv# 25,920 5-min synthetic 3-sensor rows (Rule R1)
+│   │   ├── accuracy_test.csv         # Per-sensor MAE/RMSE/Skill vs Persistence
+│   │   ├── status_forecast_test.csv  # Status forecast accuracy/F1 vs Persistence
+│   │   └── forecast.json             # 30m – 6h forecast payload
+│   ├── scripts/
+│   │   └── blynk_bridge.py           # Blynk Cloud poller, bench dry-run simulator & log reset CLI
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── (core)/               # Python 3-sensor preprocessing, modelling & forecast CLI
+│   │   │   ├── api/readings/route.ts # POST / GET /api/readings endpoint (Rules R3 & R10)
+│   │   │   ├── lib/                  # water.ts (3-sensor fuzzy rules), data.ts, format.ts
+│   │   │   └── styles/styles.css     # Unified WCAG Primer Light/Dark & Full-Bleed Hero CSS
+│   │   └── components/
+│   │       ├── dashboard/            # PondHeroVisualizer, CurrentConditionsCard, TrendChart, etc.
+│   │       └── layout/               # Navbar (with Mobile Drawer) & Dashboard orchestrator
+│   ├── PLANS.md                      # Master specification, §3 Hard Rules & §14 Decision Log
+│   └── README.md                     # This file
+└── Claude_3/                         # 3-Sensor Research Notebooks (01–04) & Datasets
 ```
-
-### 1. Dedicated Mini-Display / Kiosk UI View (Pending Task 1)
-- **Objective**: Develop a dedicated, ultra-clean UI route (`/mini` or `/kiosk`) tailored for small secondary screens (e.g., 7"–10" touch displays or a tank-side mini LCD).
-- **Core Requirements**:
-  - Focus purely on real-time statistical curves, parameter cards with min/max envelopes, and the live FWQI gauge.
-  - Stripped of heavy video/image assets, navigation headers, or dense metadata tables.
-  - Full-screen responsive auto-scaling for kiosk form factors.
-
-### 2. Electrical Engineering Device Delivery & Critical 2-Week Capture Window (Pending Task 2)
-- **Current Position**: **Week 9** (mid-November 2026).
-- **Hard Deadline for EE Team**: **End of Week 10 / Start of Week 11** (firm cutoff: **November 23, 2026**).
-- **Mandatory 2-Week Real Data Logging**:
-  - The system requires **at least 2 continuous weeks (Weeks 11–12 / 13)** of uninterrupted logging from the live Pearl Lobster tank.
-  - **Risk**: Hardware delivery *cannot slip into Week 12 or 13*; otherwise, the 2-week baseline will overlap with exhibition preparation.
-- **Week 14–15 Milestone**: **Capstone Exhibition & Live Demo** (requiring a fully operational live-logging rig and trained model snapshot).
-
-### 3. Advanced Model Exploration Beyond Traditional Statistical Methods (Pending Task 3)
-While classical statistical models (VAR + SARIMA) provide a solid statistical baseline, the project roadmap includes testing and benchmarking Machine Learning & Deep Learning architectures once real tank data arrives:
-- **Tree-Based / Gradient Boosted Models**:
-  - **LightGBM & XGBoost**: Fast tabular training, rolling window feature extraction, lag-based physical interactions.
-  - **Random Forest Regressor**: Non-linear variance baseline.
-- **Deep Sequence Architectures**:
-  - **Gated Recurrent Unit (GRU) & Long Short-Term Memory (LSTM)**: Capturing diurnal biological cycles and feeding response curves.
-  - **Dilated 1D-CNN (WaveNet style)**: Capturing multi-scale temporal receptive fields without autoregressive inference drift.
-  - **Temporal Fusion Transformer (TFT)**: Interpretable multi-horizon forecasting with attention over historical dynamics.
-- **Hybrid Approaches**:
-  - Classical statistical baseline (VAR) for macroscopic trend + LightGBM / GRU for residual anomaly correction.
-- **Architectural Constraint (Rule R17)**:
-  - All ML/DL models will output **future sensor physical values only**; the crisp FWQI and status determination remain strictly governed by the literature-grounded fuzzy inference engine.
-
-### 4. TimescaleDB & Production Ingestion (Pending Task 4)
-- Transition from static CSV files to a live TimescaleDB hypertable (`readings`) and relational `events` table with continuous 30-minute aggregates.
-- Automated weekly retraining and model checkpointing gates based on validation skill.

@@ -11,7 +11,7 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "lucide-react": "^1.58.0",
-    "next": "^16.4.3",
+    "next": "16.4.6",
     "postcss": "^8.5.29",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -23,7 +23,7 @@
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "^14.2.35",
+    "eslint-config-next": "16.4.6",
     "typescript": "^5"
   },
   "overrides": {

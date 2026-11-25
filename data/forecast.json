@@ -2,254 +2,228 @@
   "source": "placeholder",
   "origin": "2026-12-29 23:30:00",
   "models": {
-    "temperature_c": "VAR + daily harmonics",
-    "salinity_ppt": "SARIMA (s=48)",
-    "ph": "VAR + daily harmonics",
-    "dissolved_oxygen_mgl": "VAR + daily harmonics",
+    "temperature_c": "ARIMA + daily harmonics",
+    "ph": "ARIMA + daily harmonics",
     "turbidity_ntu": "VAR + daily harmonics"
   },
   "steps": [
     {
       "timestamp": "2026-12-30 00:00:00",
-      "temperature_c": 30.5001,
-      "salinity_ppt": 33.9185,
-      "ph": 8.1352,
-      "dissolved_oxygen_mgl": 6.1849,
-      "turbidity_ntu": 1.2099
+      "temperature_c": 30.4985,
+      "ph": 8.1327,
+      "turbidity_ntu": 1.2
     },
     {
       "timestamp": "2026-12-30 00:30:00",
-      "temperature_c": 30.3058,
-      "salinity_ppt": 33.9177,
-      "ph": 8.1297,
-      "dissolved_oxygen_mgl": 6.2022,
-      "turbidity_ntu": 0.8912
+      "temperature_c": 30.3104,
+      "ph": 8.1281,
+      "turbidity_ntu": 0.7006
     },
     {
       "timestamp": "2026-12-30 01:00:00",
-      "temperature_c": 30.1225,
-      "salinity_ppt": 33.9185,
-      "ph": 8.1263,
-      "dissolved_oxygen_mgl": 6.2051,
-      "turbidity_ntu": 0.7267
+      "temperature_c": 30.1258,
+      "ph": 8.1244,
+      "turbidity_ntu": 0.5143
     },
     {
       "timestamp": "2026-12-30 01:30:00",
-      "temperature_c": 29.9421,
-      "salinity_ppt": 33.9205,
-      "ph": 8.1241,
-      "dissolved_oxygen_mgl": 6.2082,
-      "turbidity_ntu": 0.56
+      "temperature_c": 29.947,
+      "ph": 8.1211,
+      "turbidity_ntu": 0.4529
     },
     {
       "timestamp": "2026-12-30 02:00:00",
-      "temperature_c": 29.7723,
-      "salinity_ppt": 33.9256,
-      "ph": 8.1215,
-      "dissolved_oxygen_mgl": 6.2098,
-      "turbidity_ntu": 0.4611
+      "temperature_c": 29.7768,
+      "ph": 8.1182,
+      "turbidity_ntu": 0.4133
     },
     {
       "timestamp": "2026-12-30 02:30:00",
-      "temperature_c": 29.6126,
-      "salinity_ppt": 33.9206,
-      "ph": 8.1194,
-      "dissolved_oxygen_mgl": 6.2118,
-      "turbidity_ntu": 0.4749
+      "temperature_c": 29.6174,
+      "ph": 8.1156,
+      "turbidity_ntu": 0.4409
     },
     {
       "timestamp": "2026-12-30 03:00:00",
-      "temperature_c": 29.4662,
-      "salinity_ppt": 33.9192,
-      "ph": 8.1175,
-      "dissolved_oxygen_mgl": 6.2148,
-      "turbidity_ntu": 0.5908
+      "temperature_c": 29.4712,
+      "ph": 8.1135,
+      "turbidity_ntu": 0.5726
     },
     {
       "timestamp": "2026-12-30 03:30:00",
-      "temperature_c": 29.3345,
-      "salinity_ppt": 33.9239,
-      "ph": 8.1159,
-      "dissolved_oxygen_mgl": 6.2188,
-      "turbidity_ntu": 0.8039
+      "temperature_c": 29.3404,
+      "ph": 8.1116,
+      "turbidity_ntu": 0.8062
     },
     {
       "timestamp": "2026-12-30 04:00:00",
-      "temperature_c": 29.2197,
-      "salinity_ppt": 33.9202,
-      "ph": 8.1145,
-      "dissolved_oxygen_mgl": 6.2241,
-      "turbidity_ntu": 1.0991
+      "temperature_c": 29.2268,
+      "ph": 8.11,
+      "turbidity_ntu": 1.1204
     },
     {
       "timestamp": "2026-12-30 04:30:00",
-      "temperature_c": 29.1235,
-      "salinity_ppt": 33.9189,
-      "ph": 8.1134,
-      "dissolved_oxygen_mgl": 6.2308,
-      "turbidity_ntu": 1.4578
+      "temperature_c": 29.1322,
+      "ph": 8.1088,
+      "turbidity_ntu": 1.4958
     },
     {
       "timestamp": "2026-12-30 05:00:00",
-      "temperature_c": 29.0474,
-      "salinity_ppt": 33.9223,
-      "ph": 8.1126,
-      "dissolved_oxygen_mgl": 6.2391,
-      "turbidity_ntu": 1.8581
+      "temperature_c": 29.058,
+      "ph": 8.1078,
+      "turbidity_ntu": 1.9133
     },
     {
       "timestamp": "2026-12-30 05:30:00",
-      "temperature_c": 28.9927,
-      "salinity_ppt": 33.9213,
-      "ph": 8.1122,
-      "dissolved_oxygen_mgl": 6.2491,
-      "turbidity_ntu": 2.2765
+      "temperature_c": 29.0054,
+      "ph": 8.1073,
+      "turbidity_ntu": 2.3507
     }
   ],
   "status_evaluation": [
     {
       "horizon": "1 h",
       "model": "Persistence",
-      "accuracy": 0.834,
-      "macro_f1": 0.787,
-      "alerts_caught": 0.794,
-      "false_alarms": 0.126,
-      "suitability_mae": 0.07
+      "accuracy": 0.8759,
+      "macro_f1": 0.8199,
+      "alerts_caught": 0.8074,
+      "false_alarms": 0.0856,
+      "suitability_mae": 0.0356
     },
     {
       "horizon": "1 h",
       "model": "Seasonal naive",
-      "accuracy": 0.604,
-      "macro_f1": 0.392,
-      "alerts_caught": 0.503,
-      "false_alarms": 0.309,
-      "suitability_mae": 0.182
+      "accuracy": 0.6745,
+      "macro_f1": 0.4102,
+      "alerts_caught": 0.4741,
+      "false_alarms": 0.2123,
+      "suitability_mae": 0.1072
     },
     {
       "horizon": "1 h",
       "model": "ARIMA",
-      "accuracy": 0.883,
-      "macro_f1": 0.822,
-      "alerts_caught": 0.836,
-      "false_alarms": 0.073,
-      "suitability_mae": 0.045
+      "accuracy": 0.9274,
+      "macro_f1": 0.8603,
+      "alerts_caught": 0.8815,
+      "false_alarms": 0.0445,
+      "suitability_mae": 0.0194
     },
     {
       "horizon": "1 h",
       "model": "SARIMA (s=48)",
-      "accuracy": 0.897,
-      "macro_f1": 0.832,
-      "alerts_caught": 0.842,
-      "false_alarms": 0.053,
-      "suitability_mae": 0.038
+      "accuracy": 0.9391,
+      "macro_f1": 0.8688,
+      "alerts_caught": 0.8741,
+      "false_alarms": 0.024,
+      "suitability_mae": 0.0198
     },
     {
       "horizon": "1 h",
       "model": "VAR",
-      "accuracy": 0.867,
-      "macro_f1": 0.778,
-      "alerts_caught": 0.824,
-      "false_alarms": 0.088,
-      "suitability_mae": 0.051
+      "accuracy": 0.9251,
+      "macro_f1": 0.8583,
+      "alerts_caught": 0.8741,
+      "false_alarms": 0.0445,
+      "suitability_mae": 0.0212
     },
     {
       "horizon": "1 h",
       "model": "ARIMA + daily harmonics",
-      "accuracy": 0.867,
-      "macro_f1": 0.81,
-      "alerts_caught": 0.824,
-      "false_alarms": 0.092,
-      "suitability_mae": 0.053
+      "accuracy": 0.9157,
+      "macro_f1": 0.8515,
+      "alerts_caught": 0.8741,
+      "false_alarms": 0.0582,
+      "suitability_mae": 0.0215
     },
     {
       "horizon": "1 h",
       "model": "VAR + daily harmonics",
-      "accuracy": 0.864,
-      "macro_f1": 0.777,
-      "alerts_caught": 0.83,
-      "false_alarms": 0.095,
-      "suitability_mae": 0.055
+      "accuracy": 0.918,
+      "macro_f1": 0.8529,
+      "alerts_caught": 0.8667,
+      "false_alarms": 0.0514,
+      "suitability_mae": 0.0214
     },
     {
       "horizon": "1 h",
       "model": "Selected on validation",
-      "accuracy": 0.864,
-      "macro_f1": 0.777,
-      "alerts_caught": 0.83,
-      "false_alarms": 0.095,
-      "suitability_mae": 0.055
+      "accuracy": 0.918,
+      "macro_f1": 0.8529,
+      "alerts_caught": 0.8667,
+      "false_alarms": 0.0514,
+      "suitability_mae": 0.0211
     },
     {
       "horizon": "3 h",
       "model": "Persistence",
-      "accuracy": 0.679,
-      "macro_f1": 0.491,
-      "alerts_caught": 0.617,
-      "false_alarms": 0.235,
-      "suitability_mae": 0.161
-    },
-    {
-      "horizon": "3 h",
-      "model": "Seasonal naive",
-      "accuracy": 0.604,
-      "macro_f1": 0.393,
-      "alerts_caught": 0.509,
-      "false_alarms": 0.304,
-      "suitability_mae": 0.182
-    },
-    {
-      "horizon": "3 h",
-      "model": "ARIMA",
-      "accuracy": 0.794,
-      "macro_f1": 0.753,
-      "alerts_caught": 0.605,
-      "false_alarms": 0.073,
-      "suitability_mae": 0.094
-    },
-    {
-      "horizon": "3 h",
-      "model": "SARIMA (s=48)",
-      "accuracy": 0.808,
-      "macro_f1": 0.647,
-      "alerts_caught": 0.659,
-      "false_alarms": 0.069,
+      "accuracy": 0.7119,
+      "macro_f1": 0.5272,
+      "alerts_caught": 0.562,
+      "false_alarms": 0.1966,
       "suitability_mae": 0.087
     },
     {
       "horizon": "3 h",
+      "model": "Seasonal naive",
+      "accuracy": 0.6698,
+      "macro_f1": 0.4085,
+      "alerts_caught": 0.4818,
+      "false_alarms": 0.2138,
+      "suitability_mae": 0.108
+    },
+    {
+      "horizon": "3 h",
+      "model": "ARIMA",
+      "accuracy": 0.8478,
+      "macro_f1": 0.8717,
+      "alerts_caught": 0.6423,
+      "false_alarms": 0.0552,
+      "suitability_mae": 0.0388
+    },
+    {
+      "horizon": "3 h",
+      "model": "SARIMA (s=48)",
+      "accuracy": 0.8454,
+      "macro_f1": 0.7055,
+      "alerts_caught": 0.6569,
+      "false_alarms": 0.0517,
+      "suitability_mae": 0.042
+    },
+    {
+      "horizon": "3 h",
       "model": "VAR",
-      "accuracy": 0.789,
-      "macro_f1": 0.713,
-      "alerts_caught": 0.665,
-      "false_alarms": 0.115,
-      "suitability_mae": 0.099
+      "accuracy": 0.8407,
+      "macro_f1": 0.8237,
+      "alerts_caught": 0.6861,
+      "false_alarms": 0.0828,
+      "suitability_mae": 0.0416
     },
     {
       "horizon": "3 h",
       "model": "ARIMA + daily harmonics",
-      "accuracy": 0.794,
-      "macro_f1": 0.699,
-      "alerts_caught": 0.671,
-      "false_alarms": 0.108,
-      "suitability_mae": 0.093
+      "accuracy": 0.8407,
+      "macro_f1": 0.7891,
+      "alerts_caught": 0.7007,
+      "false_alarms": 0.0862,
+      "suitability_mae": 0.0372
     },
     {
       "horizon": "3 h",
       "model": "VAR + daily harmonics",
-      "accuracy": 0.796,
-      "macro_f1": 0.668,
-      "alerts_caught": 0.683,
-      "false_alarms": 0.112,
-      "suitability_mae": 0.091
+      "accuracy": 0.8571,
+      "macro_f1": 0.7755,
+      "alerts_caught": 0.7299,
+      "false_alarms": 0.0759,
+      "suitability_mae": 0.0366
     },
     {
       "horizon": "3 h",
       "model": "Selected on validation",
-      "accuracy": 0.806,
-      "macro_f1": 0.676,
-      "alerts_caught": 0.713,
-      "false_alarms": 0.115,
-      "suitability_mae": 0.091
+      "accuracy": 0.8548,
+      "macro_f1": 0.801,
+      "alerts_caught": 0.7299,
+      "false_alarms": 0.0793,
+      "suitability_mae": 0.0363
     }
   ],
   "sensor_skill": [
@@ -263,74 +237,10 @@
     },
     {
       "model": "Persistence",
-      "sensor": "salinity_ppt",
-      "horizon": "30 min",
-      "mae": 0.0901,
-      "rmse": 0.175,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "ph",
-      "horizon": "30 min",
-      "mae": 0.0129,
-      "rmse": 0.0163,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "30 min",
-      "mae": 0.0591,
-      "rmse": 0.111,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "turbidity_ntu",
-      "horizon": "30 min",
-      "mae": 0.4822,
-      "rmse": 1.0775,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
       "sensor": "temperature_c",
       "horizon": "1 h",
       "mae": 0.2313,
       "rmse": 0.2659,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "salinity_ppt",
-      "horizon": "1 h",
-      "mae": 0.103,
-      "rmse": 0.199,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "ph",
-      "horizon": "1 h",
-      "mae": 0.0149,
-      "rmse": 0.0191,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "1 h",
-      "mae": 0.0726,
-      "rmse": 0.1608,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "turbidity_ntu",
-      "horizon": "1 h",
-      "mae": 0.8897,
-      "rmse": 1.6913,
       "skill_pct": 0.0
     },
     {
@@ -343,10 +253,26 @@
     },
     {
       "model": "Persistence",
-      "sensor": "salinity_ppt",
-      "horizon": "3 h",
-      "mae": 0.1467,
-      "rmse": 0.3218,
+      "sensor": "temperature_c",
+      "horizon": "6 h",
+      "mae": 1.2292,
+      "rmse": 1.3955,
+      "skill_pct": 0.0
+    },
+    {
+      "model": "Persistence",
+      "sensor": "ph",
+      "horizon": "30 min",
+      "mae": 0.0129,
+      "rmse": 0.0163,
+      "skill_pct": 0.0
+    },
+    {
+      "model": "Persistence",
+      "sensor": "ph",
+      "horizon": "1 h",
+      "mae": 0.0149,
+      "rmse": 0.0191,
       "skill_pct": 0.0
     },
     {
@@ -359,10 +285,26 @@
     },
     {
       "model": "Persistence",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "3 h",
-      "mae": 0.1398,
-      "rmse": 0.3008,
+      "sensor": "ph",
+      "horizon": "6 h",
+      "mae": 0.0482,
+      "rmse": 0.0578,
+      "skill_pct": 0.0
+    },
+    {
+      "model": "Persistence",
+      "sensor": "turbidity_ntu",
+      "horizon": "30 min",
+      "mae": 0.4822,
+      "rmse": 1.0775,
+      "skill_pct": 0.0
+    },
+    {
+      "model": "Persistence",
+      "sensor": "turbidity_ntu",
+      "horizon": "1 h",
+      "mae": 0.8897,
+      "rmse": 1.6913,
       "skill_pct": 0.0
     },
     {
@@ -375,38 +317,6 @@
     },
     {
       "model": "Persistence",
-      "sensor": "temperature_c",
-      "horizon": "6 h",
-      "mae": 1.2292,
-      "rmse": 1.3955,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "salinity_ppt",
-      "horizon": "6 h",
-      "mae": 0.2179,
-      "rmse": 0.4547,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "ph",
-      "horizon": "6 h",
-      "mae": 0.0482,
-      "rmse": 0.0578,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "6 h",
-      "mae": 0.22,
-      "rmse": 0.4105,
-      "skill_pct": 0.0
-    },
-    {
-      "model": "Persistence",
       "sensor": "turbidity_ntu",
       "horizon": "6 h",
       "mae": 2.5865,
@@ -414,490 +324,298 @@
       "skill_pct": 0.0
     },
     {
-      "model": "SARIMA (s=48)",
+      "model": "ARIMA + daily harmonics",
       "sensor": "temperature_c",
       "horizon": "30 min",
-      "mae": 0.0444,
-      "rmse": 0.0524,
-      "skill_pct": 62.1
+      "mae": 0.0407,
+      "rmse": 0.0542,
+      "skill_pct": 65.3
     },
     {
-      "model": "SARIMA (s=48)",
-      "sensor": "salinity_ppt",
-      "horizon": "30 min",
-      "mae": 0.0875,
-      "rmse": 0.1701,
-      "skill_pct": 2.8
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "ph",
-      "horizon": "30 min",
-      "mae": 0.0124,
-      "rmse": 0.0157,
-      "skill_pct": 3.9
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "30 min",
-      "mae": 0.0604,
-      "rmse": 0.1135,
-      "skill_pct": -2.2
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "turbidity_ntu",
-      "horizon": "30 min",
-      "mae": 0.4345,
-      "rmse": 0.9708,
-      "skill_pct": 9.9
-    },
-    {
-      "model": "SARIMA (s=48)",
+      "model": "ARIMA + daily harmonics",
       "sensor": "temperature_c",
       "horizon": "1 h",
-      "mae": 0.0585,
-      "rmse": 0.0673,
-      "skill_pct": 74.7
+      "mae": 0.056,
+      "rmse": 0.0813,
+      "skill_pct": 75.8
     },
     {
-      "model": "SARIMA (s=48)",
-      "sensor": "salinity_ppt",
-      "horizon": "1 h",
-      "mae": 0.102,
-      "rmse": 0.1971,
-      "skill_pct": 1.0
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "ph",
-      "horizon": "1 h",
-      "mae": 0.014,
-      "rmse": 0.018,
-      "skill_pct": 6.0
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "1 h",
-      "mae": 0.0756,
-      "rmse": 0.1674,
-      "skill_pct": -4.1
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "turbidity_ntu",
-      "horizon": "1 h",
-      "mae": 0.7509,
-      "rmse": 1.4274,
-      "skill_pct": 15.6
-    },
-    {
-      "model": "SARIMA (s=48)",
+      "model": "ARIMA + daily harmonics",
       "sensor": "temperature_c",
       "horizon": "3 h",
-      "mae": 0.1357,
-      "rmse": 0.1546,
+      "mae": 0.1272,
+      "rmse": 0.194,
+      "skill_pct": 81.0
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "temperature_c",
+      "horizon": "6 h",
+      "mae": 0.2478,
+      "rmse": 0.344,
+      "skill_pct": 79.8
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "ph",
+      "horizon": "30 min",
+      "mae": 0.0116,
+      "rmse": 0.0145,
+      "skill_pct": 9.7
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "ph",
+      "horizon": "1 h",
+      "mae": 0.0125,
+      "rmse": 0.0159,
+      "skill_pct": 15.8
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "ph",
+      "horizon": "3 h",
+      "mae": 0.0174,
+      "rmse": 0.0234,
+      "skill_pct": 39.2
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "ph",
+      "horizon": "6 h",
+      "mae": 0.0226,
+      "rmse": 0.0315,
+      "skill_pct": 53.1
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "turbidity_ntu",
+      "horizon": "30 min",
+      "mae": 0.5133,
+      "rmse": 1.0137,
+      "skill_pct": -6.5
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "turbidity_ntu",
+      "horizon": "1 h",
+      "mae": 0.8731,
+      "rmse": 1.4907,
+      "skill_pct": 1.9
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "turbidity_ntu",
+      "horizon": "3 h",
+      "mae": 1.2741,
+      "rmse": 2.0892,
+      "skill_pct": 36.3
+    },
+    {
+      "model": "ARIMA + daily harmonics",
+      "sensor": "turbidity_ntu",
+      "horizon": "6 h",
+      "mae": 1.526,
+      "rmse": 2.5934,
+      "skill_pct": 41.0
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "temperature_c",
+      "horizon": "30 min",
+      "mae": 0.041,
+      "rmse": 0.0543,
+      "skill_pct": 65.1
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "temperature_c",
+      "horizon": "1 h",
+      "mae": 0.0564,
+      "rmse": 0.0816,
+      "skill_pct": 75.6
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "temperature_c",
+      "horizon": "3 h",
+      "mae": 0.1273,
+      "rmse": 0.1938,
+      "skill_pct": 81.0
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "temperature_c",
+      "horizon": "6 h",
+      "mae": 0.2491,
+      "rmse": 0.3436,
       "skill_pct": 79.7
     },
     {
-      "model": "SARIMA (s=48)",
-      "sensor": "salinity_ppt",
-      "horizon": "3 h",
-      "mae": 0.1466,
-      "rmse": 0.3215,
-      "skill_pct": 0.1
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "ph",
-      "horizon": "3 h",
-      "mae": 0.0248,
-      "rmse": 0.0311,
-      "skill_pct": 13.1
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "3 h",
-      "mae": 0.1306,
-      "rmse": 0.281,
-      "skill_pct": 6.6
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "turbidity_ntu",
-      "horizon": "3 h",
-      "mae": 1.5059,
-      "rmse": 2.0964,
-      "skill_pct": 24.7
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "temperature_c",
-      "horizon": "6 h",
-      "mae": 0.2618,
-      "rmse": 0.2972,
-      "skill_pct": 78.7
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "salinity_ppt",
-      "horizon": "6 h",
-      "mae": 0.2192,
-      "rmse": 0.4574,
-      "skill_pct": -0.6
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "ph",
-      "horizon": "6 h",
-      "mae": 0.0389,
-      "rmse": 0.0466,
-      "skill_pct": 19.3
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "6 h",
-      "mae": 0.1729,
-      "rmse": 0.3227,
-      "skill_pct": 21.4
-    },
-    {
-      "model": "SARIMA (s=48)",
-      "sensor": "turbidity_ntu",
-      "horizon": "6 h",
-      "mae": 1.8338,
-      "rmse": 2.4327,
-      "skill_pct": 29.1
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "temperature_c",
-      "horizon": "30 min",
-      "mae": 0.0411,
-      "rmse": 0.0486,
-      "skill_pct": 64.9
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "salinity_ppt",
-      "horizon": "30 min",
-      "mae": 0.0918,
-      "rmse": 0.1784,
-      "skill_pct": -1.9
-    },
-    {
       "model": "VAR + daily harmonics",
       "sensor": "ph",
       "horizon": "30 min",
-      "mae": 0.0117,
-      "rmse": 0.0149,
-      "skill_pct": 9.1
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "30 min",
-      "mae": 0.061,
-      "rmse": 0.1146,
-      "skill_pct": -3.2
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "turbidity_ntu",
-      "horizon": "30 min",
-      "mae": 0.516,
-      "rmse": 1.1529,
-      "skill_pct": -7.0
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "temperature_c",
-      "horizon": "1 h",
-      "mae": 0.0564,
-      "rmse": 0.0649,
-      "skill_pct": 75.6
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "salinity_ppt",
-      "horizon": "1 h",
-      "mae": 0.1091,
-      "rmse": 0.2108,
-      "skill_pct": -5.9
+      "mae": 0.0115,
+      "rmse": 0.0142,
+      "skill_pct": 11.0
     },
     {
       "model": "VAR + daily harmonics",
       "sensor": "ph",
       "horizon": "1 h",
-      "mae": 0.0127,
-      "rmse": 0.0163,
-      "skill_pct": 14.8
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "1 h",
-      "mae": 0.0741,
-      "rmse": 0.1641,
-      "skill_pct": -2.1
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "turbidity_ntu",
-      "horizon": "1 h",
-      "mae": 0.8826,
-      "rmse": 1.6777,
-      "skill_pct": 0.8
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "temperature_c",
-      "horizon": "3 h",
-      "mae": 0.1277,
-      "rmse": 0.1455,
-      "skill_pct": 80.9
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "salinity_ppt",
-      "horizon": "3 h",
-      "mae": 0.1796,
-      "rmse": 0.3938,
-      "skill_pct": -22.4
+      "mae": 0.0121,
+      "rmse": 0.0153,
+      "skill_pct": 18.2
     },
     {
       "model": "VAR + daily harmonics",
       "sensor": "ph",
       "horizon": "3 h",
-      "mae": 0.0182,
-      "rmse": 0.0228,
-      "skill_pct": 36.4
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "3 h",
-      "mae": 0.1158,
-      "rmse": 0.2491,
-      "skill_pct": 17.2
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "turbidity_ntu",
-      "horizon": "3 h",
-      "mae": 1.2559,
-      "rmse": 1.7484,
-      "skill_pct": 37.2
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "temperature_c",
-      "horizon": "6 h",
-      "mae": 0.2483,
-      "rmse": 0.2819,
-      "skill_pct": 79.8
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "salinity_ppt",
-      "horizon": "6 h",
-      "mae": 0.2802,
-      "rmse": 0.5847,
-      "skill_pct": -28.6
+      "mae": 0.0166,
+      "rmse": 0.0217,
+      "skill_pct": 42.0
     },
     {
       "model": "VAR + daily harmonics",
       "sensor": "ph",
       "horizon": "6 h",
-      "mae": 0.0246,
-      "rmse": 0.0295,
-      "skill_pct": 49.0
-    },
-    {
-      "model": "VAR + daily harmonics",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "6 h",
-      "mae": 0.1373,
-      "rmse": 0.2562,
-      "skill_pct": 37.6
+      "mae": 0.0214,
+      "rmse": 0.0296,
+      "skill_pct": 55.5
     },
     {
       "model": "VAR + daily harmonics",
       "sensor": "turbidity_ntu",
+      "horizon": "30 min",
+      "mae": 0.5101,
+      "rmse": 1.0081,
+      "skill_pct": -5.8
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "turbidity_ntu",
+      "horizon": "1 h",
+      "mae": 0.868,
+      "rmse": 1.4715,
+      "skill_pct": 2.4
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "turbidity_ntu",
+      "horizon": "3 h",
+      "mae": 1.2313,
+      "rmse": 2.0249,
+      "skill_pct": 38.4
+    },
+    {
+      "model": "VAR + daily harmonics",
+      "sensor": "turbidity_ntu",
       "horizon": "6 h",
-      "mae": 1.5209,
-      "rmse": 2.0175,
-      "skill_pct": 41.2
+      "mae": 1.5026,
+      "rmse": 2.5481,
+      "skill_pct": 41.9
     },
     {
       "model": "Selected on validation",
       "sensor": "temperature_c",
       "horizon": "30 min",
-      "mae": 0.0411,
-      "rmse": 0.0486,
-      "skill_pct": 64.9
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "salinity_ppt",
-      "horizon": "30 min",
-      "mae": 0.0875,
-      "rmse": 0.1701,
-      "skill_pct": 2.8
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "ph",
-      "horizon": "30 min",
-      "mae": 0.0117,
-      "rmse": 0.0149,
-      "skill_pct": 9.1
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "30 min",
-      "mae": 0.061,
-      "rmse": 0.1146,
-      "skill_pct": -3.2
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "turbidity_ntu",
-      "horizon": "30 min",
-      "mae": 0.516,
-      "rmse": 1.1529,
-      "skill_pct": -7.0
+      "mae": 0.0407,
+      "rmse": 0.0542,
+      "skill_pct": 65.3
     },
     {
       "model": "Selected on validation",
       "sensor": "temperature_c",
       "horizon": "1 h",
-      "mae": 0.0564,
-      "rmse": 0.0649,
-      "skill_pct": 75.6
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "salinity_ppt",
-      "horizon": "1 h",
-      "mae": 0.102,
-      "rmse": 0.1971,
-      "skill_pct": 1.0
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "ph",
-      "horizon": "1 h",
-      "mae": 0.0127,
-      "rmse": 0.0163,
-      "skill_pct": 14.8
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "1 h",
-      "mae": 0.0741,
-      "rmse": 0.1641,
-      "skill_pct": -2.1
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "turbidity_ntu",
-      "horizon": "1 h",
-      "mae": 0.8826,
-      "rmse": 1.6777,
-      "skill_pct": 0.8
+      "mae": 0.056,
+      "rmse": 0.0813,
+      "skill_pct": 75.8
     },
     {
       "model": "Selected on validation",
       "sensor": "temperature_c",
       "horizon": "3 h",
-      "mae": 0.1277,
-      "rmse": 0.1455,
-      "skill_pct": 80.9
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "salinity_ppt",
-      "horizon": "3 h",
-      "mae": 0.1466,
-      "rmse": 0.3215,
-      "skill_pct": 0.1
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "ph",
-      "horizon": "3 h",
-      "mae": 0.0182,
-      "rmse": 0.0228,
-      "skill_pct": 36.4
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "3 h",
-      "mae": 0.1158,
-      "rmse": 0.2491,
-      "skill_pct": 17.2
-    },
-    {
-      "model": "Selected on validation",
-      "sensor": "turbidity_ntu",
-      "horizon": "3 h",
-      "mae": 1.2559,
-      "rmse": 1.7484,
-      "skill_pct": 37.2
+      "mae": 0.1272,
+      "rmse": 0.194,
+      "skill_pct": 81.0
     },
     {
       "model": "Selected on validation",
       "sensor": "temperature_c",
       "horizon": "6 h",
-      "mae": 0.2483,
-      "rmse": 0.2819,
+      "mae": 0.2478,
+      "rmse": 0.344,
       "skill_pct": 79.8
     },
     {
       "model": "Selected on validation",
-      "sensor": "salinity_ppt",
-      "horizon": "6 h",
-      "mae": 0.2192,
-      "rmse": 0.4574,
-      "skill_pct": -0.6
+      "sensor": "ph",
+      "horizon": "30 min",
+      "mae": 0.0116,
+      "rmse": 0.0145,
+      "skill_pct": 9.7
+    },
+    {
+      "model": "Selected on validation",
+      "sensor": "ph",
+      "horizon": "1 h",
+      "mae": 0.0125,
+      "rmse": 0.0159,
+      "skill_pct": 15.8
+    },
+    {
+      "model": "Selected on validation",
+      "sensor": "ph",
+      "horizon": "3 h",
+      "mae": 0.0174,
+      "rmse": 0.0234,
+      "skill_pct": 39.2
     },
     {
       "model": "Selected on validation",
       "sensor": "ph",
       "horizon": "6 h",
-      "mae": 0.0246,
-      "rmse": 0.0295,
-      "skill_pct": 49.0
+      "mae": 0.0226,
+      "rmse": 0.0315,
+      "skill_pct": 53.1
     },
     {
       "model": "Selected on validation",
-      "sensor": "dissolved_oxygen_mgl",
-      "horizon": "6 h",
-      "mae": 0.1373,
-      "rmse": 0.2562,
-      "skill_pct": 37.6
+      "sensor": "turbidity_ntu",
+      "horizon": "30 min",
+      "mae": 0.5101,
+      "rmse": 1.0081,
+      "skill_pct": -5.8
+    },
+    {
+      "model": "Selected on validation",
+      "sensor": "turbidity_ntu",
+      "horizon": "1 h",
+      "mae": 0.868,
+      "rmse": 1.4715,
+      "skill_pct": 2.4
+    },
+    {
+      "model": "Selected on validation",
+      "sensor": "turbidity_ntu",
+      "horizon": "3 h",
+      "mae": 1.2313,
+      "rmse": 2.0249,
+      "skill_pct": 38.4
     },
     {
       "model": "Selected on validation",
       "sensor": "turbidity_ntu",
       "horizon": "6 h",
-      "mae": 1.5209,
-      "rmse": 2.0175,
-      "skill_pct": 41.2
+      "mae": 1.5026,
+      "rmse": 2.5481,
+      "skill_pct": 41.9
     }
   ],
   "test_sample_counts": {
     "test_origins": 427,
-    "Optimal": 262,
-    "Warning": 158,
-    "Critical": 7
+    "Optimal": 293,
+    "Warning": 130,
+    "Critical": 4
   }
 }

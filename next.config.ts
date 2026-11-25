@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  allowedDevOrigins: ['*.free.pinggy.net'],
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,

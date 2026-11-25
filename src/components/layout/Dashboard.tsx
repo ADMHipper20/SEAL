@@ -2,11 +2,16 @@
 
 import React, { useState, useEffect, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  TrendingUp,
+  Droplets,
+  AlertTriangle,
+  History,
+  Cpu,
+} from 'lucide-react';
 import type { Snapshot } from '@/app/lib/data';
-import type { NavigationTab, PondVisualMode } from '@/app/lib/water';
+import type { AboutSubTab, PondVisualMode, PrimaryTab } from '@/app/lib/water';
 import { Navbar, type ThemeMode } from '@/components/layout/Navbar';
-
-const THEME_STORAGE_KEY = 'seal_theme_mode';
 import { OverviewView } from '@/components/dashboard/OverviewView';
 import { ForecastView } from '@/components/dashboard/ForecastView';
 import { WaterQualityView } from '@/components/dashboard/WaterQualityView';
@@ -14,6 +19,7 @@ import { AlertsView } from '@/components/dashboard/AlertsView';
 import { HistoricalDataView } from '@/components/dashboard/HistoricalDataView';
 import { DeviceStatusView } from '@/components/dashboard/DeviceStatusView';
 
+const THEME_STORAGE_KEY = 'seal_theme_mode';
 const VISUAL_MODE_STORAGE_KEY = 'seal_pond_visual_mode';
 const LIVE_POLL_INTERVAL_SECONDS = 5;
 
@@ -21,13 +27,24 @@ interface DashboardProps {
   snapshot: Snapshot;
 }
 
+const ABOUT_SUB_TABS: Array<{
+  id: AboutSubTab;
+  label: string;
+  icon: React.ReactNode;
+}> = [
+  { id: 'forecast', label: 'Forecast', icon: <TrendingUp size={14} /> },
+  { id: 'water_quality', label: 'Water Quality', icon: <Droplets size={14} /> },
+  { id: 'alerts', label: 'Alerts', icon: <AlertTriangle size={14} /> },
+  { id: 'history', label: 'History', icon: <History size={14} /> },
+  { id: 'device', label: 'Device', icon: <Cpu size={14} /> },
+];
+
 export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [currentTab, setCurrentTab] = useState<NavigationTab>('overview');
-  // Default to Static 3D image (lightest) as requested, persisted in localStorage
+  const [primaryTab, setPrimaryTab] = useState<PrimaryTab>('overview');
+  const [aboutSubTab, setAboutSubTab] = useState<AboutSubTab>('forecast');
   const [visualMode, setVisualMode] = useState<PondVisualMode>('image');
-  // 5-second real-time monitoring loop
   const [livePolling, setLivePolling] = useState<boolean>(true);
   const [secondsLeft, setSecondsLeft] = useState<number>(LIVE_POLL_INTERVAL_SECONDS);
   const [themeMode, setThemeMode] = useState<ThemeMode>('system');
@@ -135,6 +152,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
     });
   };
 
+  const openAboutSection = (sub: AboutSubTab) => {
+    setPrimaryTab('about');
+    setAboutSubTab(sub);
+  };
+
   return (
     <div className="app-container">
       <div
@@ -142,30 +164,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
         style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
       >
         <Navbar
-          currentTab={currentTab}
-          onTabChange={setCurrentTab}
+          primaryTab={primaryTab}
+          aboutSubTab={aboutSubTab}
+          onPrimaryTabChange={setPrimaryTab}
+          onOpenAboutSubTab={openAboutSection}
           unreadAlertCount={snapshot.alerts.length}
           mode={snapshot.mode}
           lastReadingAt={snapshot.lastReadingAt}
           livePolling={livePolling}
           secondsUntilNextPoll={secondsLeft}
           onToggleLivePolling={handleToggleLivePolling}
-          onNavigateToAlerts={() => setCurrentTab('alerts')}
+          onNavigateToAlerts={() => openAboutSection('alerts')}
           themeMode={themeMode}
           onThemeChange={handleThemeChange}
         />
 
+        {/* Decision D8: Horizontal segmented sub-menu bar when About is active */}
+        {primaryTab === 'about' && (
+          <div className="about-subnav-bar">
+            <div className="about-subnav-inner">
+              <div className="pond-toggle-glass-pill about-subnav-pill" role="tablist" aria-label="About Sections">
+                {ABOUT_SUB_TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={aboutSubTab === tab.id}
+                    className={`pond-toggle-sub-btn about-subnav-btn ${aboutSubTab === tab.id ? 'active' : ''}`}
+                    onClick={() => setAboutSubTab(tab.id)}
+                  >
+                    {tab.icon}
+                    <span>{tab.label}</span>
+                    {tab.id === 'alerts' && snapshot.alerts.length > 0 && (
+                      <span className="top-pill-badge">{snapshot.alerts.length}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         <main
           className="dashboard-content"
           style={{
-            padding: '10px 16px',
+            padding: primaryTab === 'overview' ? '0' : '20px 20px 40px',
             flex: 1,
             minHeight: 0,
             overflowY: 'auto',
             overflowX: 'hidden',
           }}
         >
-          {currentTab === 'overview' && (
+          {primaryTab === 'overview' && (
             <OverviewView
               snapshot={snapshot}
               visualMode={visualMode}
@@ -175,13 +225,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
               livePolling={livePolling}
               onToggleLivePolling={handleToggleLivePolling}
               secondsUntilNextPoll={secondsLeft}
-              onNavigateToForecast={() => setCurrentTab('forecast')}
-              onNavigateToWaterQuality={() => setCurrentTab('water_quality')}
-              onNavigateToAlerts={() => setCurrentTab('alerts')}
+              onNavigateToForecast={() => openAboutSection('forecast')}
+              onNavigateToWaterQuality={() => openAboutSection('water_quality')}
+              onNavigateToAlerts={() => openAboutSection('alerts')}
             />
           )}
 
-          {currentTab === 'forecast' && (
+          {primaryTab === 'about' && aboutSubTab === 'forecast' && (
             <ForecastView
               history24h={snapshot.history24h}
               liveStream5s={snapshot.liveStream5s}
@@ -191,7 +241,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
             />
           )}
 
-          {currentTab === 'water_quality' && (
+          {primaryTab === 'about' && aboutSubTab === 'water_quality' && (
             <WaterQualityView
               current={snapshot.current}
               liveStream5s={snapshot.liveStream5s}
@@ -201,13 +251,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ snapshot }) => {
             />
           )}
 
-          {currentTab === 'alerts' && <AlertsView alerts={snapshot.alerts} />}
+          {primaryTab === 'about' && aboutSubTab === 'alerts' && (
+            <AlertsView alerts={snapshot.alerts} />
+          )}
 
-          {currentTab === 'history' && (
+          {primaryTab === 'about' && aboutSubTab === 'history' && (
             <HistoricalDataView history7d={snapshot.history7d} mode={snapshot.mode} />
           )}
 
-          {currentTab === 'device' && (
+          {primaryTab === 'about' && aboutSubTab === 'device' && (
             <DeviceStatusView
               mode={snapshot.mode}
               offline={snapshot.offline}

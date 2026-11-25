@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { AlertCircle, AlertTriangle, MoreHorizontal, X, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ArrowUpRight, X, CheckCircle2 } from 'lucide-react';
 import type { ThresholdAlert } from '@/app/lib/data';
 import { formatShortDateGmt7 } from '@/app/lib/format';
 
@@ -22,19 +22,6 @@ export const BentoAlertsList: React.FC<BentoAlertsListProps> = ({
 }) => {
   const [categoryFilter, setCategoryFilter] = useState<AlertCategoryFilter>('all');
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = React.useRef<HTMLDivElement | null>(null);
-
-  React.useEffect(() => {
-    if (!menuOpen) return;
-    const handleClickOutside = (ev: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(ev.target as Node)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [menuOpen]);
 
   const filteredAlerts = useMemo(() => {
     return alerts.filter((a) => {
@@ -51,173 +38,129 @@ export const BentoAlertsList: React.FC<BentoAlertsListProps> = ({
   };
 
   return (
-    <div className="bento-card bento-alerts-card alerts-card">
-      {/* Header with Title, Count Badge, and Dropdown Menu */}
-      <div className="bento-card-header alerts-card-header">
-        <div className="alerts-header-title-group">
-          <h3 className="bento-card-title">Threshold Alerts</h3>
-          <span className="alerts-count-badge">{filteredAlerts.length}</span>
+    <section className="bento-card overview-panel" aria-label="Threshold Alerts">
+      <div className="overview-panel__header">
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h2 className="overview-panel__title">Threshold Alerts</h2>
+            <span className="alerts-count-badge">{filteredAlerts.length}</span>
+          </div>
+          <span className="overview-panel__subtitle">
+            Non-Optimal 30-min episodes across Temperature, pH &amp; Turbidity
+          </span>
         </div>
 
-        <div className="card-dropdown-wrapper alerts-menu-anchor" ref={menuRef}>
-          <button
-            type="button"
-            className={`card-dot-btn alerts-more-btn ${menuOpen ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setMenuOpen((prev) => !prev);
-            }}
-            title="Alert Options"
-            aria-label="Alert Options"
-            aria-expanded={menuOpen}
-          >
-            <MoreHorizontal size={15} />
-          </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+          <div className="alerts-category-filters" style={{ marginBottom: 0 }}>
+            <button
+              type="button"
+              className={`filter-pill-btn ${categoryFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setCategoryFilter('all')}
+            >
+              All
+            </button>
+            <button
+              type="button"
+              className={`filter-pill-btn ${categoryFilter === 'critical' ? 'active' : ''}`}
+              onClick={() => setCategoryFilter('critical')}
+            >
+              Critical
+            </button>
+            <button
+              type="button"
+              className={`filter-pill-btn ${categoryFilter === 'warning' ? 'active' : ''}`}
+              onClick={() => setCategoryFilter('warning')}
+            >
+              Warning
+            </button>
+          </div>
 
-          {menuOpen && (
-            <div className="card-dropdown-menu alerts-dropdown-panel" role="menu">
-              {onNavigateToAlerts && (
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="card-dropdown-item alerts-dropdown-action"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuOpen(false);
-                    onNavigateToAlerts();
-                  }}
-                >
-                  Open Full Alert Log
-                </button>
-              )}
-              {dismissedIds.size > 0 && (
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="card-dropdown-item alerts-dropdown-action"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setDismissedIds(new Set());
-                    setMenuOpen(false);
-                  }}
-                >
-                  Restore Hidden ({dismissedIds.size})
-                </button>
-              )}
-            </div>
+          {onNavigateToAlerts && (
+            <button
+              type="button"
+              className="bento-action-btn-mini"
+              onClick={onNavigateToAlerts}
+            >
+              <span>Log</span>
+              <ArrowUpRight size={12} />
+            </button>
           )}
         </div>
       </div>
 
-      {/* Category Filter Pills (All, Critical, Warning) */}
-      <div className="alerts-category-filters">
-        <button
-          type="button"
-          className={`filter-pill-btn ${categoryFilter === 'all' ? 'active' : ''}`}
-          onClick={() => setCategoryFilter('all')}
-        >
-          All
-        </button>
-        <button
-          type="button"
-          className={`filter-pill-btn ${categoryFilter === 'critical' ? 'active' : ''}`}
-          onClick={() => setCategoryFilter('critical')}
-        >
-          Critical
-        </button>
-        <button
-          type="button"
-          className={`filter-pill-btn ${categoryFilter === 'warning' ? 'active' : ''}`}
-          onClick={() => setCategoryFilter('warning')}
-        >
-          Warning
-        </button>
-      </div>
-
-      {/* Spacious Alert Items List */}
-      <div className="bento-alerts-list">
+      <div className="alerts-feed">
         {offline && mode === 'live' && (
-          <div className="bento-alert-row">
-            <div className="bento-alert-left-icon">
-              <AlertTriangle size={15} className="alert-triangle-icon" />
+          <div className="alerts-feed__row">
+            <div className="alerts-feed__top">
+              <span className="alerts-feed__meta">TELEMETRY DELAYED</span>
+              <span className="condition-status-pill status-warning">Stale</span>
             </div>
-            <div className="bento-alert-text-stack">
-              <div className="alert-row-meta-top">
-                <span className="alert-category-tag">Telemetry</span>
-                <span className="alert-row-time">Delayed</span>
-              </div>
-              <div className="alert-row-title">Sensor Node Stale</div>
-              <div className="alert-row-desc">No reading received in the last 15 minutes</div>
-            </div>
-            <div className="bento-alert-right-group">
-              <div className="alert-vertical-pill pill-amber" aria-hidden="true" />
-            </div>
+            <h3 className="alerts-feed__title">ESP32 Sensor Node Stale</h3>
+            <p className="alerts-feed__desc">No reading received in the last 15 minutes</p>
           </div>
         )}
 
         {filteredAlerts.length === 0 ? (
           <div className="bento-no-alerts">
-            <CheckCircle2 size={14} style={{ color: 'var(--status-normal)' }} />
+            <CheckCircle2 size={15} style={{ color: 'var(--status-normal)' }} />
             <span>
               {categoryFilter !== 'all'
                 ? 'No active alerts for this filter.'
-                : 'All 5 monitored parameters within target range.'}
+                : 'All 3 monitored parameters sit within published target ranges.'}
             </span>
           </div>
         ) : (
-          filteredAlerts.slice(0, 6).map((alert) => {
+          filteredAlerts.slice(0, 5).map((alert) => {
             const isCrit = alert.severity === 'critical';
-            const pillColorClass = isCrit ? 'pill-red' : 'pill-amber';
-            const sevTextClass = isCrit ? 'sev-urgent' : 'sev-amber';
-
             return (
               <div
                 key={alert.id}
-                className="bento-alert-row"
+                className="alerts-feed__row"
                 onClick={onNavigateToAlerts}
                 role="button"
                 tabIndex={0}
-                title="Click to open alert details"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onNavigateToAlerts?.();
+                  }
+                }}
               >
-                <div className="bento-alert-left-icon">
-                  {isCrit ? (
-                    <AlertCircle size={15} style={{ color: 'var(--status-critical)' }} />
-                  ) : (
-                    <AlertTriangle size={15} className="alert-triangle-icon" />
-                  )}
-                </div>
-
-                <div className="bento-alert-text-stack">
-                  <div className="alert-row-meta-top">
-                    <span className="alert-category-tag">{alert.parameterLabel}</span>
-                    <span className="alert-row-time">{formatShortDateGmt7(alert.t)}</span>
-                  </div>
-                  <div className="alert-row-title">{alert.title}</div>
-                  <div className="alert-row-desc">{alert.message}</div>
-                  <div className="alert-row-meta-bottom">
-                    <span className={`alert-row-severity ${sevTextClass}`}>
-                      {isCrit ? 'Critical' : 'Warning'} · Suitability {alert.suitabilityPct}%
+                <div className="alerts-feed__top">
+                  <span className="alerts-feed__meta">
+                    {isCrit ? (
+                      <AlertCircle size={13} style={{ color: 'var(--status-critical)' }} />
+                    ) : (
+                      <AlertTriangle size={13} style={{ color: 'var(--status-warning)' }} />
+                    )}
+                    <span>
+                      {alert.parameterLabel} · {formatShortDateGmt7(alert.t)} GMT+7
                     </span>
+                  </span>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span className={`condition-status-pill status-${isCrit ? 'critical' : 'warning'}`}>
+                      {isCrit ? 'Critical' : 'Warning'} · μ={alert.suitabilityPct}%
+                    </span>
+                    <button
+                      type="button"
+                      className="alerts-feed__dismiss"
+                      onClick={(e) => handleDismiss(alert.id, e)}
+                      title="Dismiss alert"
+                      aria-label="Dismiss alert"
+                    >
+                      <X size={13} />
+                    </button>
                   </div>
                 </div>
 
-                <div className="bento-alert-right-group">
-                  <button
-                    type="button"
-                    className="alert-dismiss-btn"
-                    onClick={(e) => handleDismiss(alert.id, e)}
-                    title="Hide from list"
-                    aria-label="Hide alert"
-                  >
-                    <X size={11} />
-                  </button>
-                  <div className={`alert-vertical-pill ${pillColorClass}`} aria-hidden="true" />
-                </div>
+                <h3 className="alerts-feed__title">{alert.title}</h3>
+                <p className="alerts-feed__desc">{alert.message}</p>
               </div>
             );
           })
         )}
       </div>
-    </div>
+    </section>
   );
 };

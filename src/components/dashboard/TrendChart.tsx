@@ -15,7 +15,7 @@ import {
   sensorStatus,
   statusModifier,
 } from '@/app/lib/format';
-import { SENSORS, SENSOR_INFO, doPercent, optimumText, type SensorKey } from '@/app/lib/water';
+import { SENSORS, SENSOR_INFO, optimumText, type SensorKey } from '@/app/lib/water';
 
 export type ChartTimeRange = '5s' | '24h' | '7d';
 
@@ -25,23 +25,23 @@ interface TrendChartProps {
   history7d?: Point[];
   forecastSteps?: Point[];
   defaultRange?: ChartTimeRange;
+  /** Optional controlled time range (synced with CurrentConditionsCard 5s / 24h state). */
+  range?: ChartTimeRange;
+  onRangeChange?: (range: ChartTimeRange) => void;
   compact?: boolean;
+  /** Optional controlled sensor selection (bound to Current Conditions cards on Overview). */
+  selectedSensor?: SensorKey;
+  onSelectSensor?: (sensor: SensorKey) => void;
 }
 
 const W = 760;
 const H = 236;
-const PAD_L = 52;
+const PAD_L = 54;
 const PAD_R = 24;
 const PAD_T = 22;
 const PAD_B = 30;
 const PLOT_W = W - PAD_L - PAD_R;
 const PLOT_H = H - PAD_T - PAD_B;
-
-/**
- * Restrained Cold Soft Dark line colors (no rainbow overuse, zero gradients).
- */
-const OBSERVED_COLOR = '#38bdf8';
-const FORECAST_COLOR = '#94a3b8';
 
 interface InteractivePoint {
   idx: number;
@@ -58,15 +58,35 @@ export function TrendChart({
   liveStream5s = [],
   history7d = [],
   forecastSteps = [],
-  defaultRange = '24h',
+  defaultRange = '5s',
+  range: controlledRange,
+  onRangeChange,
   compact = false,
+  selectedSensor,
+  onSelectSensor,
 }: TrendChartProps) {
-  const [selected, setSelected] = useState<SensorKey>('temperature_c');
-  const [range, setRange] = useState<ChartTimeRange>(defaultRange);
+  const [internalSelected, setInternalSelected] = useState<SensorKey>('temperature_c');
+  const [internalRange, setInternalRange] = useState<ChartTimeRange>(defaultRange);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
 
+  const selected = selectedSensor ?? internalSelected;
+  const range = controlledRange ?? internalRange;
+
+  const handleSelectSensor = (key: SensorKey) => {
+    setInternalSelected(key);
+    onSelectSensor?.(key);
+    setHoverIndex(null);
+  };
+
+  const handleSelectRange = (nextRange: ChartTimeRange) => {
+    setInternalRange(nextRange);
+    onRangeChange?.(nextRange);
+    setHoverIndex(null);
+  };
+
   const info = SENSOR_INFO[selected];
-  const color = OBSERVED_COLOR;
+  const observedColor = 'var(--accent-primary)';
+  const forecastColor = 'var(--text-secondary)';
 
   const activeHistory = useMemo(() => {
     if (range === '5s' && liveStream5s.length > 0) return liveStream5s;
@@ -99,7 +119,6 @@ export function TrendChart({
   const xOf = (i: number) => PAD_L + (i / totalSteps) * PLOT_W;
   const yOf = (v: number) => PAD_T + PLOT_H - ((v - lo) / (hi - lo || 1)) * PLOT_H;
 
-  // Monotone cubic spline coordinates for observed/live history
   const histCoords = useMemo(() => {
     const pts: { x: number; y: number }[] = [];
     histVals.forEach((v, i) => {
@@ -116,7 +135,6 @@ export function TrendChart({
     [histCoords],
   );
 
-  // Monotone cubic spline coordinates for forecast steps
   const lastHistIdx = activeHistory.length - 1;
   const lastHistVal = lastHistIdx >= 0 ? histVals[lastHistIdx] : null;
   const fcCoords = useMemo(() => {
@@ -135,7 +153,6 @@ export function TrendChart({
 
   const fcSplinePath = useMemo(() => getMonotoneSplinePath(fcCoords), [fcCoords]);
 
-  // Interactive point list for mouse drag / hover across both observed & forecast
   const interactivePoints = useMemo<InteractivePoint[]>(() => {
     const pts: InteractivePoint[] = [];
     activeHistory.forEach((pt, i) => {
@@ -171,7 +188,6 @@ export function TrendChart({
     return pts;
   }, [activeHistory, activeForecast, selected, range, totalSteps, lo, hi]);
 
-  // Summary statistics
   const stats = useMemo(() => {
     const valid = histVals.filter((v): v is number => v != null && Number.isFinite(v));
     if (valid.length === 0) return { avg: 0, min: 0, max: 0, latest: 0 };
@@ -188,14 +204,12 @@ export function TrendChart({
   const bandTop = Number.isFinite(optHi)
     ? Math.max(PAD_T, Math.min(PAD_T + PLOT_H, yOf(optHi)))
     : PAD_T;
-  const bandBot =
-    Number.isFinite(optLo) && selected !== 'dissolved_oxygen_mgl'
-      ? Math.max(PAD_T, Math.min(PAD_T + PLOT_H, yOf(optLo)))
-      : PAD_T + PLOT_H;
+  const bandBot = Number.isFinite(optLo)
+    ? Math.max(PAD_T, Math.min(PAD_T + PLOT_H, yOf(optLo)))
+    : PAD_T + PLOT_H;
 
   const yTicks = [lo, (lo + hi) / 2, hi];
 
-  // Space X-axis timestamps evenly across the full chart width so labels never overlap
   const xTickIndices = useMemo(() => {
     if (allSeriesPoints.length === 0) return [];
     const last = allSeriesPoints.length - 1;
@@ -237,13 +251,11 @@ export function TrendChart({
   const hoveredSuit = hovered ? hovered.point.assessment.perSensor[selected] : null;
   const hoveredStatus = hovered ? sensorStatus(hoveredSuit) : 'Optimal';
   const hoveredStatusKey = bentoStatusKey(hoveredStatus);
-  const hoveredDoSat =
-    hovered && selected === 'dissolved_oxygen_mgl' ? doPercent(hovered.point.values) : null;
 
   const forecastHours = Math.round((activeForecast.length * 30) / 60);
 
   return (
-    <section className="glass-panel chart-card" style={{ padding: compact ? '14px 16px' : '18px 20px' }}>
+    <section className="glass-panel chart-card" style={{ padding: compact ? '14px 16px' : '16px 20px' }}>
       {/* Row 1: Title + Time Range Pills */}
       <div className="chart-header">
         <div className="chart-title-group">
@@ -267,10 +279,7 @@ export function TrendChart({
               <button
                 type="button"
                 className={`range-pill-btn ${range === '5s' ? 'active' : ''}`}
-                onClick={() => {
-                  setRange('5s');
-                  setHoverIndex(null);
-                }}
+                onClick={() => handleSelectRange('5s')}
               >
                 Live 5s
               </button>
@@ -278,10 +287,7 @@ export function TrendChart({
             <button
               type="button"
               className={`range-pill-btn ${range === '24h' ? 'active' : ''}`}
-              onClick={() => {
-                setRange('24h');
-                setHoverIndex(null);
-              }}
+              onClick={() => handleSelectRange('24h')}
             >
               24h {forecastSteps.length > 0 ? `+ ${Math.round((forecastSteps.length * 30) / 60)}h Fc` : ''}
             </button>
@@ -289,10 +295,7 @@ export function TrendChart({
               <button
                 type="button"
                 className={`range-pill-btn ${range === '7d' ? 'active' : ''}`}
-                onClick={() => {
-                  setRange('7d');
-                  setHoverIndex(null);
-                }}
+                onClick={() => handleSelectRange('7d')}
               >
                 7d
               </button>
@@ -301,7 +304,7 @@ export function TrendChart({
         </div>
       </div>
 
-      {/* Row 2: Horizontal Parameter Selector Tabs */}
+      {/* Row 2: Horizontal 3-Sensor Parameter Selector Tabs */}
       <div className="param-tabs-row" role="tablist" aria-label="Select sensor parameter">
         {SENSORS.map((key) => (
           <button
@@ -310,18 +313,15 @@ export function TrendChart({
             role="tab"
             aria-selected={selected === key}
             className={`param-tab-btn ${selected === key ? 'active' : ''}`}
-            onClick={() => {
-              setSelected(key);
-              setHoverIndex(null);
-            }}
+            onClick={() => handleSelectSensor(key)}
           >
-            {SENSOR_INFO[key].shortLabel}
+            {SENSOR_INFO[key].shortLabel} ({SENSOR_INFO[key].unit})
           </button>
         ))}
       </div>
 
-      {/* Interactive SVG Chart Area (Flat fills, zero gradients) */}
-      <div className="interactive-chart-container" style={{ height: compact ? '195px' : '230px' }}>
+      {/* Interactive SVG Chart Area */}
+      <div className="interactive-chart-container" style={{ height: compact ? '200px' : '225px' }}>
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="chart-svg"
@@ -344,21 +344,21 @@ export function TrendChart({
                 y={PAD_T}
                 width={Math.max(1, x2 - x1)}
                 height={PLOT_H}
-                fill={mod === 'critical' ? '#f87171' : '#fbbf24'}
-                opacity={mod === 'critical' ? 0.1 : 0.06}
+                fill={mod === 'critical' ? 'var(--status-critical)' : 'var(--status-warning)'}
+                opacity={mod === 'critical' ? 0.12 : 0.08}
               />
             );
           })}
 
-          {/* Literature Optimum Band (Flat subtle fill) */}
-          {selected !== 'dissolved_oxygen_mgl' && bandBot > bandTop && (
+          {/* Literature Optimum Band */}
+          {bandBot > bandTop && (
             <rect
               x={PAD_L}
               y={bandTop}
               width={PLOT_W}
               height={bandBot - bandTop}
-              fill="#34d399"
-              opacity={0.05}
+              fill="var(--status-normal)"
+              opacity={0.07}
             />
           )}
 
@@ -372,15 +372,15 @@ export function TrendChart({
                   x2={W - PAD_R}
                   y1={y}
                   y2={y}
-                  stroke="#1f2c3f"
+                  stroke="var(--border-light)"
                   strokeDasharray="4 4"
                 />
                 <text
                   x={PAD_L - 8}
                   y={y + 4}
                   textAnchor="end"
-                  fontSize="10.5"
-                  fill="#8b9bb4"
+                  fontSize="11.5"
+                  fill="var(--text-secondary)"
                   fontFamily="var(--font-jetbrains-mono), monospace"
                 >
                   {val.toFixed(info.decimals)}
@@ -397,25 +397,25 @@ export function TrendChart({
                 y={PAD_T}
                 width={Math.max(0, W - PAD_R - xOf(lastHistIdx))}
                 height={PLOT_H}
-                fill="#94a3b8"
-                opacity="0.04"
+                fill="var(--text-secondary)"
+                opacity="0.05"
               />
               <line
                 x1={xOf(lastHistIdx)}
                 x2={xOf(lastHistIdx)}
                 y1={PAD_T}
                 y2={PAD_T + PLOT_H}
-                stroke="#475569"
-                strokeWidth="1.2"
+                stroke="var(--border-medium)"
+                strokeWidth="1.3"
                 strokeDasharray="4 4"
               />
               <text
                 x={Math.min(W - PAD_R - 4, xOf(lastHistIdx) + 6)}
-                y={PAD_T + 11}
-                textAnchor={xOf(lastHistIdx) > W - 130 ? 'end' : 'start'}
-                fontSize="10"
+                y={PAD_T + 12}
+                textAnchor={xOf(lastHistIdx) > W - 135 ? 'end' : 'start'}
+                fontSize="11"
                 fontWeight="600"
-                fill="#94a3b8"
+                fill="var(--text-secondary)"
                 fontFamily="var(--font-jetbrains-mono), monospace"
               >
                 +{forecastHours}h Forecast →
@@ -423,25 +423,25 @@ export function TrendChart({
             </g>
           )}
 
-          {/* Flat Solid Area & Monotone Spline for Observed / 5s Live Stream */}
-          {histAreaPath && <path d={histAreaPath} fill={color} fillOpacity="0.07" />}
+          {/* Observed / 5s Live Stream Area & Monotone Spline */}
+          {histAreaPath && <path d={histAreaPath} fill={observedColor} fillOpacity="0.09" />}
           {histSplinePath && (
             <path
               d={histSplinePath}
               fill="none"
-              stroke={color}
-              strokeWidth="2.0"
+              stroke={observedColor}
+              strokeWidth="2.1"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           )}
 
-          {/* Monotone Dashed Spline for Forecast Steps */}
+          {/* Dashed Forecast Spline */}
           {fcSplinePath && (
             <path
               d={fcSplinePath}
               fill="none"
-              stroke={FORECAST_COLOR}
+              stroke={forecastColor}
               strokeWidth="1.9"
               strokeDasharray="5 4"
               strokeLinecap="round"
@@ -456,15 +456,15 @@ export function TrendChart({
                 cx={histCoords[histCoords.length - 1].x}
                 cy={histCoords[histCoords.length - 1].y}
                 r="5.5"
-                fill={color}
-                opacity="0.18"
+                fill={observedColor}
+                opacity="0.2"
               />
               <circle
                 cx={histCoords[histCoords.length - 1].x}
                 cy={histCoords[histCoords.length - 1].y}
-                r="3.0"
-                fill={color}
-                stroke="#131b26"
+                r="3"
+                fill={observedColor}
+                stroke="var(--bg-surface)"
                 strokeWidth="1.5"
               />
             </g>
@@ -478,24 +478,24 @@ export function TrendChart({
                 y1={PAD_T}
                 x2={hovered.x}
                 y2={PAD_T + PLOT_H}
-                stroke={hovered.kind === 'forecast' ? FORECAST_COLOR : color}
+                stroke={hovered.kind === 'forecast' ? forecastColor : observedColor}
                 strokeWidth="1.2"
                 strokeDasharray="3 3"
-                opacity="0.8"
+                opacity="0.85"
               />
               <circle
                 cx={hovered.x}
                 cy={hovered.y}
                 r="6.5"
-                fill={hovered.kind === 'forecast' ? FORECAST_COLOR : color}
-                opacity="0.18"
+                fill={hovered.kind === 'forecast' ? forecastColor : observedColor}
+                opacity="0.2"
               />
               <circle
                 cx={hovered.x}
                 cy={hovered.y}
                 r="3.8"
-                fill="#131b26"
-                stroke={hovered.kind === 'forecast' ? FORECAST_COLOR : color}
+                fill="var(--bg-surface)"
+                stroke={hovered.kind === 'forecast' ? forecastColor : observedColor}
                 strokeWidth="2.2"
               />
             </g>
@@ -515,9 +515,9 @@ export function TrendChart({
                 x={xOf(idx)}
                 y={H - 8}
                 textAnchor={anchor}
-                fontSize="10.5"
-                fill={isFcTick ? '#cbd5e1' : '#8b9bb4'}
-                fontWeight={isFcTick ? '600' : '400'}
+                fontSize="11"
+                fill={isFcTick ? 'var(--text-primary)' : 'var(--text-secondary)'}
+                fontWeight={isFcTick ? '600' : '500'}
                 fontFamily="var(--font-jetbrains-mono), monospace"
               >
                 {range === '5s'
@@ -542,7 +542,7 @@ export function TrendChart({
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                 <span
                   className="tooltip-indicator-dot"
-                  style={{ background: hovered.kind === 'forecast' ? FORECAST_COLOR : color }}
+                  style={{ background: hovered.kind === 'forecast' ? forecastColor : observedColor }}
                 />
                 <span className="tooltip-param-name">{info.shortLabel}</span>
               </span>
@@ -557,31 +557,22 @@ export function TrendChart({
 
             <div className="tooltip-value-row">
               <span className="tooltip-val">{hovered.val.toFixed(info.decimals)}</span>
-              <span className="tooltip-unit">
-                {info.unit}
-                {hoveredDoSat != null ? ` (${hoveredDoSat.toFixed(0)}% sat)` : ''}
-              </span>
+              <span className="tooltip-unit">{info.unit}</span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                className={`condition-status-pill status-${hoveredStatusKey}`}
-                style={{ fontSize: '9.5px', padding: '1px 6px' }}
-              >
+              <span className={`condition-status-pill status-${hoveredStatusKey}`}>
                 {hoveredStatus}
               </span>
               <span
                 style={{
-                  fontSize: '10px',
+                  fontSize: '12px',
                   fontWeight: 600,
                   color: 'var(--text-secondary)',
                   fontFamily: 'var(--font-jetbrains-mono), monospace',
                 }}
               >
                 μ={formatPercent(hoveredSuit)}
-                {hovered.point.assessment.fwqi != null
-                  ? ` · FWQI ${hovered.point.assessment.fwqi.toFixed(1)}`
-                  : ''}
               </span>
             </div>
 
@@ -598,25 +589,25 @@ export function TrendChart({
       <div className="chart-stats-footer">
         <div className="chart-stat-item">
           <span className="stat-label">Latest ({range === '5s' ? '5s Live' : '30m'})</span>
-          <span className="stat-val">
+          <span className="stat-value">
             {stats.latest.toFixed(info.decimals)} <small>{info.unit}</small>
           </span>
         </div>
         <div className="chart-stat-item">
           <span className="stat-label">Average</span>
-          <span className="stat-val">
+          <span className="stat-value">
             {stats.avg.toFixed(info.decimals)} <small>{info.unit}</small>
           </span>
         </div>
         <div className="chart-stat-item">
           <span className="stat-label">Peak (Max)</span>
-          <span className="stat-val">
+          <span className="stat-value">
             {stats.max.toFixed(info.decimals)} <small>{info.unit}</small>
           </span>
         </div>
         <div className="chart-stat-item">
           <span className="stat-label">Low (Min)</span>
-          <span className="stat-val">
+          <span className="stat-value">
             {stats.min.toFixed(info.decimals)} <small>{info.unit}</small>
           </span>
         </div>

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Info } from 'lucide-react';
 import type { Point } from '@/app/lib/data';
-import { formatDateTimeSecondsGmt7 } from '@/app/lib/format';
+import { formatDateTimeSecondsGmt7, formatPercent } from '@/app/lib/format';
 import { SENSORS, SENSOR_INFO, TARGET_SPECIES, type SensorKey } from '@/app/lib/water';
 import { SensorCard } from '@/components/dashboard/SensorCard';
 import { TrendChart } from '@/components/dashboard/TrendChart';
@@ -26,19 +26,28 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
   const [selectedKey, setSelectedKey] = useState<SensorKey>('temperature_c');
   const info = SENSOR_INFO[selectedKey];
   const [a, b, c, d] = info.mf;
-  const fmtBound = (x: number) =>
-    !Number.isFinite(x) ? (x < 0 ? '−∞' : '+∞') : String(x);
+  const fmtBound = (x: number) => (!Number.isFinite(x) ? (x < 0 ? '−∞' : '+∞') : String(x));
 
   return (
     <div className="water-quality-view">
       {/* Header */}
       <div className="water-quality-view__header">
         <div>
-          <h1 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0, letterSpacing: '-0.01em' }}>
-            Water-Quality Parameter Analysis — {TARGET_SPECIES.commonName} (<em>{TARGET_SPECIES.scientificName}</em>)
+          <h1
+            style={{
+              fontSize: '1.3rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              margin: 0,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Water-Quality Parameter Analysis — {TARGET_SPECIES.commonName} (
+            <em>{TARGET_SPECIES.scientificName}</em>)
           </h1>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '3px 0 0' }}>
-            Real-time 5-second live telemetry monitoring &amp; 30-minute median literature suitability functions (FWQI = {current.assessment.fwqi != null ? current.assessment.fwqi.toFixed(1) : '—'} · GMT+7)
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: '4px 0 0' }}>
+            Real-time 5-second live stream &amp; 30-minute median fuzzy suitability (Overall μ ={' '}
+            {formatPercent(current.assessment.suitability)} · GMT+7)
           </p>
         </div>
 
@@ -48,26 +57,29 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
         </div>
       </div>
 
-      {/* Rule R15 Mandatory Notice: 5 Monitored Parameters Only (No Ammonia Sensor) */}
+      {/* Decision D7 Mandatory Scope Notice: 3 Automated ESP32 Sensors Only */}
       <div className="forecast-view__r8-banner" role="note">
-        <Info size={15} style={{ flexShrink: 0 }} />
+        <Info size={16} style={{ flexShrink: 0 }} />
         <div>
-          <strong>Scope of Water-Quality Status (Rule R15 &amp; D6):</strong> Measured parameters are{' '}
-          <strong>Temperature, Salinity, pH, Dissolved O₂, and Turbidity (NTU)</strong> per{' '}
-          <code>RAB_CAPSTONE.xlsx</code>. There is <strong>no ammonia sensor</strong>; the protein skimmer limits
-          dissolved organics before they become ammonia, and turbidity is <em>not</em> an ammonia proxy. Log manual
-          ammonia/nitrite test-kit readings in the events table.
+          <strong>Hardware Scope (Decision D7 &amp; Rule R3):</strong> Automated ESP32S CH340 + ADS1115 telemetry
+          covers <strong>3 probes only</strong>: <strong>DS18B20 (Temperature)</strong>,{' '}
+          <strong>PH-4502C (pH)</strong>, and <strong>Turbidity Red Board (NTU)</strong>.{' '}
+          <strong>Salinity</strong> is monitored manually via refractometer, <strong>Dissolved Oxygen</strong> is
+          maintained continuously by the 24/7 campus blower, and organic/ammonia load is managed by the 24/7 protein
+          skimmer. Fuzzy status reflects only these 3 monitored parameters (Rule R14).
         </div>
       </div>
 
-      {/* 5 Sensor Parameter Cards (Fixed 5-column responsive grid) */}
-      <div className="water-quality-view__sensors-grid">
+      {/* 3 Automated Sensor Cards (Horizontal 3-column responsive grid; clickable to sync chart) */}
+      <div className="water-quality-view__sensors-grid water-quality-view__sensors-grid--three">
         {SENSORS.map((sensor) => (
           <SensorCard
             key={sensor}
             sensor={sensor}
             values={current.values}
             suitability={current.assessment.perSensor[sensor]}
+            selected={selectedKey === sensor}
+            onSelect={() => setSelectedKey(sensor)}
             trend={
               liveStream5s.length >= 12
                 ? liveStream5s.slice(-24).map((pt) => pt.values[sensor])
@@ -77,24 +89,26 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
         ))}
       </div>
 
-      {/* Interactive Telemetry & Forecast Chart (Supports 5s Live Stream, 24h + Forecast, and 7d) */}
+      {/* Interactive Telemetry & Forecast Chart */}
       <TrendChart
         history={history24h}
         liveStream5s={liveStream5s}
         history7d={history7d}
         forecastSteps={forecastSteps}
         defaultRange="5s"
+        selectedSensor={selectedKey}
+        onSelectSensor={setSelectedKey}
       />
 
-      {/* Literature-Based Fuzzy Specification Reference — Fixed 100% Width Container */}
+      {/* Literature-Based Fuzzy Specification Reference */}
       <div className="glass-panel fuzzy-spec-card">
         <div className="fuzzy-spec-card__header">
           <div>
-            <h2 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+            <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
               Literature-Based Fuzzy Suitability Specification (<em>{TARGET_SPECIES.scientificName}</em>)
             </h2>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: '2px 0 0' }}>
-              Trapezoid (zero, full, full, zero) &amp; Turbidity step rule · Overall suitability = MIN(μ₁…μ₅) (D5) · Crisp FWQI = 100 × (Π μᵢ)^(1/5) (D9)
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', margin: '3px 0 0' }}>
+              Trapezoidal membership (a, b, c, d) · Overall suitability = MIN(μ_temp, μ_pH, μ_turbidity) (Decision D5)
             </p>
           </div>
 
@@ -114,32 +128,24 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
           </div>
         </div>
 
-        {/* Fixed 4-Column Specification Box */}
+        {/* 4-Column Specification Summary */}
         <div className="fuzzy-spec-card__grid">
           <div className="fuzzy-spec-card__cell">
-            <div className="fuzzy-spec-card__label">Full-Suitability Range (μ = 1)</div>
+            <div className="fuzzy-spec-card__label">Full-Suitability Optimum (μ = 1)</div>
             <div className="fuzzy-spec-card__val" style={{ color: 'var(--status-normal-text)' }}>
               {info.optimalRangeText}
             </div>
           </div>
 
           <div className="fuzzy-spec-card__cell">
-            <div className="fuzzy-spec-card__label">
-              {info.kind === 'step' ? 'Step Floor (Warning Only, D7)' : 'Tolerance Zero-Points (μ = 0)'}
-            </div>
+            <div className="fuzzy-spec-card__label">Tolerance Zero-Points (μ = 0)</div>
             <div className="fuzzy-spec-card__val" style={{ color: 'var(--text-primary)' }}>
-              {info.kind === 'step'
-                ? `> ${c} NTU → μ = ${info.floor ?? 0.5}`
-                : `${fmtBound(a)} / ${fmtBound(d)} ${
-                    selectedKey === 'dissolved_oxygen_mgl' ? '% sat.' : info.unit
-                  }`}
+              {fmtBound(a)} / {fmtBound(d)} {info.unit}
             </div>
           </div>
 
           <div className="fuzzy-spec-card__cell">
-            <div className="fuzzy-spec-card__label">
-              {info.kind === 'step' ? 'Step Rule Parameters' : 'Trapezoid (a, b, c, d)'}
-            </div>
+            <div className="fuzzy-spec-card__label">Trapezoid (a, b, c, d)</div>
             <div
               className="fuzzy-spec-card__val"
               style={{ fontFamily: 'var(--font-jetbrains-mono), monospace' }}
@@ -149,14 +155,14 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
           </div>
 
           <div className="fuzzy-spec-card__cell">
-            <div className="fuzzy-spec-card__label">Hardware Probe (RAB)</div>
-            <div className="fuzzy-spec-card__val" style={{ fontSize: '0.84rem' }}>
+            <div className="fuzzy-spec-card__label">Hardware Probe (EE BOM)</div>
+            <div className="fuzzy-spec-card__val" style={{ fontSize: '0.88rem', whiteSpace: 'normal' }}>
               {info.probeNote}
             </div>
           </div>
         </div>
 
-        {/* Fixed-Width Citation Box */}
+        {/* Citation Box */}
         <div className="fuzzy-spec-card__citation">
           <div>
             <strong style={{ color: 'var(--text-primary)' }}>
@@ -171,15 +177,15 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
           )}
         </div>
 
-        {/* Fixed-Layout All-5-Sensors Reference Matrix */}
+        {/* All-3-Sensors Reference Matrix */}
         <div className="forecast-view__table-wrap">
           <table className="forecast-view__table fuzzy-spec-table">
             <thead>
               <tr>
-                <th style={{ width: '18%' }}>Parameter</th>
+                <th style={{ width: '20%' }}>Parameter</th>
                 <th style={{ width: '18%' }}>Optimum (μ = 1)</th>
-                <th style={{ width: '22%' }}>Rule / Curve (a, b, c, d)</th>
-                <th style={{ width: '42%' }}>Published Literature Reference</th>
+                <th style={{ width: '22%' }}>Trapezoid (a, b, c, d)</th>
+                <th style={{ width: '40%' }}>Published Literature Reference</th>
               </tr>
             </thead>
             <tbody>
@@ -198,12 +204,10 @@ export const WaterQualityView: React.FC<WaterQualityViewProps> = ({
                     <td style={{ color: 'var(--status-normal-text)', fontWeight: 600 }}>
                       {sInfo.optimalRangeText}
                     </td>
-                    <td style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: '12px' }}>
-                      {sInfo.kind === 'step'
-                        ? `step ≤ ${sc} (floor ${sInfo.floor ?? 0.5})`
-                        : `(${fmtBound(sa)}, ${fmtBound(sb)}, ${fmtBound(sc)}, ${fmtBound(sd)})`}
+                    <td style={{ fontFamily: 'var(--font-jetbrains-mono), monospace', fontSize: '12.5px' }}>
+                      ({fmtBound(sa)}, {fmtBound(sb)}, {fmtBound(sc)}, {fmtBound(sd)})
                     </td>
-                    <td style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>
+                    <td style={{ color: 'var(--text-secondary)', fontSize: '12.5px' }}>
                       {sInfo.source}
                     </td>
                   </tr>

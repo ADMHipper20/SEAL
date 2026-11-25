@@ -1,11 +1,12 @@
 /**
- * Server-only data access (PLANS.md §3, §4, §7, §8).
+ * Server-only data access (PLANS.md §3, §4, §7, Decision D7).
  *
  * Sources (all in `seal/data/`):
- *  - readings.csv                live log appended by the ESP32 via POST /api/readings
- *  - sensor_log_placeholder.csv  synthetic 5-min placeholder log from Claude_2 (sensor_log_5min_placeholder_v2.csv)
+ *  - readings.csv                live 3-sensor log appended by ESP32 via POST /api/readings
+ *  - sensor_log_placeholder.csv  synthetic 5-min 3-sensor placeholder log (Claude_3)
  *  - forecast.json               written by `src/app/(core)/forecast.py`
  *
+ * Schema (Rule R3): timestamp, temperature_c, ph, turbidity_ntu
  * Time zone (Decision D1): fixed to GMT+7 (WIB / Asia/Jakarta).
  */
 import 'server-only';
@@ -15,7 +16,6 @@ import {
   SENSORS,
   SENSOR_INFO,
   assess,
-  doPercent,
   optimumText,
   type Assessment,
   type SensorKey,
@@ -146,8 +146,23 @@ export function toStamp(t: number): string {
   return new Date(t).toISOString().slice(0, 19).replace('T', ' ');
 }
 
+/**
+ * Parses both naive GMT+7 strings ("2026-11-23 10:30:00") and ISO 8601
+ * strings with explicit offsets ("2026-10-01T00:00:00+07:00" or "...Z")
+ * into GMT+7 wall-clock ms (matching `wallClockNow()` and `formatTime()`).
+ */
 export function parseStamp(s: string): number {
-  return Date.parse(s.trim().replace(' ', 'T') + 'Z');
+  const trimmed = s.trim();
+  if (!trimmed) return NaN;
+
+  // Explicit timezone offset or trailing Z -> parse UTC epoch, then shift to GMT+7 wall-clock
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(trimmed)) {
+    const utcMs = Date.parse(trimmed);
+    return Number.isNaN(utcMs) ? NaN : utcMs + WIB_OFFSET_MS;
+  }
+
+  // Naive local GMT+7 timestamp -> store wall-clock directly as UTC ms
+  return Date.parse(trimmed.replace(' ', 'T') + 'Z');
 }
 
 // ------------------------------------------------------------------ CSV log
@@ -189,7 +204,7 @@ function readLog(file: string): { rows: Row[]; spacingMin: number } {
   return { rows, spacingMin };
 }
 
-/** Appends one reading to the live log (creates it with §4.1 columns if needed). */
+/** Appends one 3-sensor reading to the live log (creates it with §4.1 columns if needed; Rule R3 & R10). */
 export function appendReading(t: number, v: SensorValues): void {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   if (!fs.existsSync(LIVE_LOG)) fs.writeFileSync(LIVE_LOG, `timestamp,${SENSORS.join(',')}\n`);
@@ -263,7 +278,7 @@ function virtualNow(rows: Row[], wall: number): number {
 interface RawForecastFile {
   source?: 'live' | 'placeholder';
   origin: string;
-  models: Record<SensorKey, string>;
+  models: Partial<Record<SensorKey, string>>;
   steps: ({ timestamp: string } & Partial<Record<SensorKey, number | null>>)[];
   status_evaluation?: {
     horizon: string;
@@ -276,7 +291,7 @@ interface RawForecastFile {
   }[];
   sensor_skill?: {
     model: string;
-    sensor: SensorKey;
+    sensor: string;
     horizon: string;
     mae: number;
     rmse: number;
@@ -288,6 +303,10 @@ interface RawForecastFile {
     Warning: number;
     Critical: number;
   };
+}
+
+function isSensorKey(s: string): s is SensorKey {
+  return (SENSORS as readonly string[]).includes(s);
 }
 
 function readForecast(now: number): Forecast | null {
@@ -302,16 +321,20 @@ function readForecast(now: number): Forecast | null {
     });
     const counts = raw.test_sample_counts ?? {
       test_origins: 427,
-      Optimal: 262,
-      Warning: 158,
-      Critical: 7,
+      Optimal: 292,
+      Warning: 131,
+      Critical: 4,
     };
+    const models = {} as Record<SensorKey, string>;
+    for (const k of SENSORS) {
+      models[k] = raw.models?.[k] ?? '—';
+    }
     return {
       source: raw.source === 'live' ? 'live' : 'placeholder',
       origin,
       originStamp: raw.origin,
       stale: now - origin > FORECAST_MAX_AGE_MS || origin > now,
-      models: raw.models,
+      models,
       steps,
       statusEvaluation: (raw.status_evaluation ?? []).map((e) => ({
         horizon: e.horizon,
@@ -322,14 +345,16 @@ function readForecast(now: number): Forecast | null {
         falseAlarms: e.false_alarms,
         suitabilityMae: e.suitability_mae,
       })),
-      sensorSkill: (raw.sensor_skill ?? []).map((r) => ({
-        model: r.model,
-        sensor: r.sensor,
-        horizon: r.horizon,
-        mae: r.mae,
-        rmse: r.rmse,
-        skillPct: r.skill_pct,
-      })),
+      sensorSkill: (raw.sensor_skill ?? [])
+        .filter((r) => isSensorKey(r.sensor))
+        .map((r) => ({
+          model: r.model,
+          sensor: r.sensor as SensorKey,
+          horizon: r.horizon,
+          mae: r.mae,
+          rmse: r.rmse,
+          skillPct: r.skill_pct,
+        })),
       testSampleCounts: {
         testOrigins: counts.test_origins,
         Optimal: counts.Optimal,
@@ -353,19 +378,15 @@ function buildThresholdAlerts(points: Point[]): ThresholdAlert[] {
     if ((status !== 'Warning' && status !== 'Critical') || !limiting) continue;
 
     const info = SENSOR_INFO[limiting];
-    const rawVal =
-      limiting === 'dissolved_oxygen_mgl' ? doPercent(pt.values) : pt.values[limiting];
-    const unit = limiting === 'dissolved_oxygen_mgl' ? '% sat' : info.unit;
+    const rawVal = pt.values[limiting];
+    const unit = info.unit;
     const suit = perSensor[limiting] ?? 0;
     const suitPct = Math.round(suit * 100);
-    const valStr =
-      rawVal != null ? rawVal.toFixed(limiting === 'dissolved_oxygen_mgl' ? 0 : info.decimals) : '—';
+    const valStr = rawVal != null ? rawVal.toFixed(info.decimals) : '—';
     const direction =
-      info.kind === 'step'
-        ? 'Above Step Limit'
-        : rawVal != null && rawVal < info.mf[1]
-          ? 'Below Target'
-          : 'Above Target';
+      rawVal != null && Number.isFinite(info.mf[1]) && rawVal < info.mf[1]
+        ? 'Below Target'
+        : 'Above Target';
 
     // Avoid duplicating consecutive identical-sensor alerts unless status changed
     const prev = alerts[alerts.length - 1];
@@ -399,15 +420,13 @@ function buildThresholdAlerts(points: Point[]): ThresholdAlert[] {
 
 const SENSOR_JITTER_AMP: Record<SensorKey, number> = {
   temperature_c: 0.04,
-  salinity_ppt: 0.05,
-  dissolved_oxygen_mgl: 0.03,
   ph: 0.015,
   turbidity_ntu: 0.03,
 };
 
 /**
  * Builds a 60-point 5-second live monitoring stream (last 5 minutes at 5s intervals).
- * Uses surrounding raw log rows plus deterministic micro-variation within sensor probe resolution
+ * Uses surrounding raw log rows plus deterministic micro-variation within probe resolution
  * so each 5-second tick advances smoothly in real time (GMT+7).
  */
 function buildLiveStream5s(rows: Row[], now: number, fallbackValues: SensorValues): Point[] {
@@ -434,7 +453,6 @@ function buildLiveStream5s(rows: Row[], now: number, fallbackValues: SensorValue
         const frac = Math.max(0, Math.min(1, (tickT - prevRow.t) / (nextRow.t - prevRow.t)));
         base = v0 + (v1 - v0) * frac;
       }
-      // Deterministic micro-oscillation seeded by the 5s tick index & sensor index
       const tickStep = Math.floor(tickT / LIVE_TICK_MS);
       const wave =
         Math.sin(tickStep * 0.65 + sIdx * 1.7) * 0.6 +

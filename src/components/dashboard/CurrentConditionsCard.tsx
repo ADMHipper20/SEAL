@@ -4,13 +4,12 @@ import React, { useState } from 'react';
 import {
   Droplets,
   Thermometer,
-  Waves,
-  Wind,
   Eye,
   ArrowUpRight,
   TrendingUp,
   TrendingDown,
   Minus,
+  Info,
 } from 'lucide-react';
 import type { Point } from '@/app/lib/data';
 import {
@@ -21,18 +20,19 @@ import {
   getMonotoneSplinePath,
   sensorStatus,
 } from '@/app/lib/format';
-import { SENSORS, SENSOR_INFO, doPercent, type SensorKey } from '@/app/lib/water';
+import { SENSORS, SENSOR_INFO, optimumText, type SensorKey } from '@/app/lib/water';
 
 interface CurrentConditionsCardProps {
   current: Point;
   liveStream5s?: Point[];
   history24h: Point[];
+  selectedSensor: SensorKey;
+  sparkWindow?: '5s' | '24h';
+  onSparkWindowChange?: (window: '5s' | '24h') => void;
+  onSelectSensor: (sensor: SensorKey, activeWindow: '5s' | '24h') => void;
   onViewDetails?: () => void;
 }
 
-/**
- * Flat, gradient-free sparkline for Cold Soft Dark UI.
- */
 const MiniSparkline: React.FC<{
   values: (number | null)[];
   statusKey: 'normal' | 'warning' | 'critical' | 'unknown';
@@ -42,20 +42,20 @@ const MiniSparkline: React.FC<{
 
   const strokeColor =
     statusKey === 'critical'
-      ? '#f87171'
+      ? 'var(--status-critical)'
       : statusKey === 'warning'
-        ? '#fbbf24'
-        : '#38bdf8';
+        ? 'var(--status-warning)'
+        : 'var(--accent-primary)';
 
   if (slice.length < 2) {
     return (
-      <svg width="72" height="22" viewBox="0 0 72 22" className="mini-sparkline-svg" aria-hidden="true">
+      <svg width="68" height="22" viewBox="0 0 68 22" className="mini-sparkline-svg" aria-hidden="true">
         <path
-          d="M 2,11 L 70,11"
+          d="M 2,11 L 66,11"
           fill="none"
           stroke={strokeColor}
           strokeWidth="1.4"
-          strokeOpacity="0.4"
+          strokeOpacity="0.45"
           strokeDasharray="2,2"
         />
       </svg>
@@ -66,7 +66,7 @@ const MiniSparkline: React.FC<{
   const max = Math.max(...slice);
   const range = max - min || 0.02;
 
-  const width = 72;
+  const width = 68;
   const height = 22;
   const paddingY = 3;
   const usableH = height - paddingY * 2;
@@ -83,7 +83,7 @@ const MiniSparkline: React.FC<{
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="mini-sparkline-svg" aria-hidden="true">
-      <path d={area} fill={strokeColor} fillOpacity="0.08" />
+      <path d={area} fill={strokeColor} fillOpacity="0.09" />
       <path
         d={line}
         fill="none"
@@ -92,48 +92,34 @@ const MiniSparkline: React.FC<{
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx={lastPt.x} cy={lastPt.y} r="2.2" fill={strokeColor} />
+      <circle cx={lastPt.x} cy={lastPt.y} r="2.1" fill={strokeColor} />
     </svg>
   );
 };
 
-const SENSOR_STYLE: Record<
-  SensorKey,
-  {
-    itemClass: string;
-    icon: React.ReactNode;
-  }
-> = {
-  temperature_c: {
-    itemClass: 'condition-temp',
-    icon: <Thermometer size={13} className="condition-icon" />,
-  },
-  salinity_ppt: {
-    itemClass: 'condition-salinity',
-    icon: <Waves size={13} className="condition-icon" />,
-  },
-  dissolved_oxygen_mgl: {
-    itemClass: 'condition-oxygen',
-    icon: <Wind size={13} className="condition-icon" />,
-  },
-  ph: {
-    itemClass: 'condition-ph',
-    icon: <Droplets size={13} className="condition-icon" />,
-  },
-  turbidity_ntu: {
-    itemClass: 'condition-turbidity condition-item--wide',
-    icon: <Eye size={13} className="condition-icon" />,
-  },
+const SENSOR_ICONS: Record<SensorKey, React.ReactNode> = {
+  temperature_c: <Thermometer size={16} />,
+  ph: <Droplets size={16} />,
+  turbidity_ntu: <Eye size={16} />,
 };
 
 export const CurrentConditionsCard: React.FC<CurrentConditionsCardProps> = ({
   current,
   liveStream5s = [],
   history24h,
+  selectedSensor,
+  sparkWindow,
+  onSparkWindowChange,
+  onSelectSensor,
   onViewDetails,
 }) => {
-  const [sparkMode, setSparkMode] = useState<'5s' | '24h'>('5s');
-  const doSat = doPercent(current.values);
+  const [internalMode, setInternalMode] = useState<'5s' | '24h'>('5s');
+  const sparkMode = sparkWindow ?? internalMode;
+
+  const handleModeChange = (next: '5s' | '24h') => {
+    setInternalMode(next);
+    onSparkWindowChange?.(next);
+  };
 
   const activeSeriesPoints =
     sparkMode === '5s' && liveStream5s.length > 0 ? liveStream5s : history24h;
@@ -150,99 +136,106 @@ export const CurrentConditionsCard: React.FC<CurrentConditionsCardProps> = ({
   };
 
   const renderTrendIcon = (trend: 'up' | 'down' | 'stable') => {
-    if (trend === 'up') return <TrendingUp size={11} className="trend-icon trend-up" />;
-    if (trend === 'down') return <TrendingDown size={11} className="trend-icon trend-down" />;
-    return <Minus size={11} className="trend-icon trend-stable" />;
+    if (trend === 'up') return <TrendingUp size={12} className="trend-icon trend-up" />;
+    if (trend === 'down') return <TrendingDown size={12} className="trend-icon trend-down" />;
+    return <Minus size={12} className="trend-icon trend-stable" />;
   };
 
   return (
-    <div className="bento-card current-conditions-card">
-      <div className="bento-card-header">
-        <div className="card-title-with-info">
-          <Droplets size={14} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
-          <h3 className="bento-card-title">Current Conditions (5 Sensors)</h3>
+    <section className="conditions-shelf" aria-label="Current Conditions">
+      {/* Header Toolbar */}
+      <div className="conditions-shelf__header">
+        <div className="conditions-shelf__title-group">
+          <h2 className="conditions-shelf__title">Current Conditions</h2>
+          <span className="manual-salinity-badge">
+            <Info size={12} />
+            <span>Salinity: Manual Check · DO: 24/7 Blower</span>
+          </span>
         </div>
 
-        <div className="spark-mode-switch" role="group" aria-label="Sparkline window">
-          <button
-            type="button"
-            className={`spark-mode-btn ${sparkMode === '5s' ? 'active' : ''}`}
-            onClick={() => setSparkMode('5s')}
-            title={`Show 5-second live telemetry stream sparklines (Latest: ${formatTimeSeconds(current.t)} GMT+7)`}
-          >
-            <span className="live-stream-pill__dot" />
-            <span>5s</span>
-          </button>
-          <button
-            type="button"
-            className={`spark-mode-btn ${sparkMode === '24h' ? 'active' : ''}`}
-            onClick={() => setSparkMode('24h')}
-            title="Show 24-hour 30-minute median sparklines"
-          >
-            <span>24h</span>
-          </button>
+        <div className="conditions-shelf__actions">
+          <div className="spark-mode-switch" role="group" aria-label="Telemetry window (5s live or 24h)">
+            <button
+              type="button"
+              className={`spark-mode-btn ${sparkMode === '5s' ? 'active' : ''}`}
+              onClick={() => handleModeChange('5s')}
+              title={`5-second live stream (${formatTimeSeconds(current.t)} GMT+7)`}
+            >
+              <span className="live-stream-pill__dot" />
+              <span>5s Live</span>
+            </button>
+            <button
+              type="button"
+              className={`spark-mode-btn ${sparkMode === '24h' ? 'active' : ''}`}
+              onClick={() => handleModeChange('24h')}
+              title="24-hour 30-minute median series"
+            >
+              <span>24h</span>
+            </button>
+          </div>
+
+          {onViewDetails && (
+            <button
+              type="button"
+              className="bento-action-btn-mini"
+              onClick={onViewDetails}
+              title="Open Water Quality Details"
+            >
+              <span>Water Quality</span>
+              <ArrowUpRight size={12} />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* 5 Parameters (§4.1: temperature_c, salinity_ppt, ph, dissolved_oxygen_mgl, turbidity_ntu) */}
-      <div className="current-conditions-grid current-conditions-grid--five">
+      {/* 3 Compact Horizontal Sensor Cards */}
+      <div className="conditions-shelf__grid">
         {SENSORS.map((key) => {
           const info = SENSOR_INFO[key];
-          const style = SENSOR_STYLE[key];
           const suit = current.assessment.perSensor[key];
           const stLabel = sensorStatus(suit);
           const stKey = bentoStatusKey(stLabel);
           const trend = computeTrend(key);
           const series = activeSeriesPoints.map((p) => p.values[key]);
+          const isSelected = selectedSensor === key;
 
           return (
-            <div key={key} className={`condition-item ${style.itemClass}`}>
-              <div className="condition-item-content">
-                <div className="condition-item-top">
-                  <span className="condition-label" title={info.source}>
-                    {style.icon}
-                    {info.shortLabel}
-                  </span>
-                  <div className="condition-meta-right">
-                    <span
-                      className="condition-trend-wrap"
-                      title={`${sparkMode === '5s' ? '5-sec' : '30-min'} trend: ${trend}`}
-                    >
-                      {renderTrendIcon(trend)}
-                    </span>
-                    <span
-                      className={`condition-status-dot dot-${stKey}`}
-                      title={`Status: ${stLabel} (μ = ${suit != null ? suit.toFixed(2) : '—'})`}
-                    />
-                  </div>
-                </div>
-
-                <div className="condition-val-group">
-                  <span className="condition-val">{formatValue(key, current.values[key])}</span>
-                  <span className="condition-unit">
-                    {info.unit}
-                    {key === 'dissolved_oxygen_mgl' && doSat != null
-                      ? ` (${doSat.toFixed(0)}% sat)`
-                      : ''}
-                  </span>
-                </div>
-
-                <div className="condition-bottom-row">
-                  <span className={`condition-status-pill status-${stKey}`}>{stLabel}</span>
-                  <div className="condition-sparkline-wrap">
-                    <MiniSparkline values={series} statusKey={stKey} />
-                  </div>
-                </div>
+            <button
+              key={key}
+              type="button"
+              onClick={() => onSelectSensor(key, sparkMode)}
+              aria-pressed={isSelected}
+              className={`conditions-card ${isSelected ? 'conditions-card--selected' : ''}`}
+              title={`Click to open ${info.label} (${sparkMode === '5s' ? '5s Live' : '24h'}) in the graph`}
+            >
+              <div className={`conditions-card__icon ${isSelected ? 'conditions-card__icon--active' : ''}`}>
+                {SENSOR_ICONS[key]}
               </div>
-            </div>
+
+              <div className="conditions-card__body">
+                <div className="conditions-card__top">
+                  <span className="conditions-card__label">{info.shortLabel}</span>
+                  <span className="condition-trend-wrap">{renderTrendIcon(trend)}</span>
+                </div>
+                <div className="conditions-card__value-row">
+                  <span className="conditions-card__val">
+                    {formatValue(key, current.values[key])}
+                  </span>
+                  <span className="conditions-card__unit">{info.unit}</span>
+                </div>
+                <span className="conditions-card__target">
+                  Optimum {optimumText(key)} · μ={suit != null ? `${Math.round(suit * 100)}%` : '—'}
+                </span>
+              </div>
+
+              <div className="conditions-card__right">
+                <span className={`condition-status-pill status-${stKey}`}>{stLabel}</span>
+                <MiniSparkline values={series} statusKey={stKey} />
+              </div>
+            </button>
           );
         })}
       </div>
-
-      <button type="button" className="btn-bento-dark" onClick={onViewDetails}>
-        <span>View Detailed Water Quality &amp; Interactive Chart</span>
-        <ArrowUpRight size={13} className="btn-bento-arrow" />
-      </button>
-    </div>
+    </section>
   );
 };
